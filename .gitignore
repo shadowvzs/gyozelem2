@@ -1,0 +1,13 @@
+**/obj/*
+**/bin/*
+**/bundle.js
+**/dist/*
+**/.vscode
+**/*.map.js
+**/node_modules
+.DS_Store
+appsettings.json
+*.db
+**/wwwroot/*
+**/build/*
+publish

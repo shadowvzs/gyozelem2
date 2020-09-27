@@ -1,0 +1,68 @@
+/*
+    --- style ---
+*/
+
+:host {
+    position: relative;
+    overflow: hidden;
+    background-color: white;
+    max-width: 100%;
+    display: block;
+    height: 100%;
+}
+
+:host .slider-body {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+}
+
+:host .slider-body > img,
+:host .slider-body > div:not(.counter) {
+    max-width: 100%;
+    max-height: 100%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+:host .slider-body > img {
+    position: absolute;
+}
+
+:host .arrow {
+    position: absolute;
+    top: 50%;
+    color: #fff;
+    background-color: black;
+    transform: translateY(-50%);
+    font-size: 5vw;
+    display: block;
+    padding: 0.25em 0.5em;
+    border-radius: 4px;
+    text-shadow: 1px 0 1px #000,-1px 0 1px #000,0 -1px 1px #000,0 1px 1px #000;
+    opacity: .3;
+    cursor: pointer;
+    transition: 0.3s;
+    user-select: none;
+}
+
+:host .arrow:hover {
+    opacity: 0.8;
+}
+
+:host .arrow.left {
+    left: 0;
+}
+
+:host .arrow.right {
+    right: 0;
+}
+
+:host .counter {
+    background-color: rgba(0,0,0,0.8);
+    bottom: 0;
+    padding: 8px 16px;
+    border-radius: 4px;
+}

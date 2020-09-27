@@ -1,0 +1,7 @@
+
+const fsDetailStyles = createStyles({
+    folderModal: {
+        padding: 16,
+        textAlign: 'center'
+    },
+});

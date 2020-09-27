@@ -1,0 +1,19 @@
+form .form-input[data-valid="false"], 
+form .form-input[data-valid="false"], 
+form .form-input[data-valid="false"] {
+    border-color: red;
+}
+
+form .form-input[data-valid="true"], 
+form .form-input[data-valid="true"], 
+form .form-input[data-valid="true"] {
+    border-color: initial;
+}
+
+form input {
+    padding: 4px;
+}
+
+form input[type="submit"] {
+    cursor: pointer;
+}

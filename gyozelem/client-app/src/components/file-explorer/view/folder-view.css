@@ -1,0 +1,11 @@
+.form-view-container {
+    padding: 10px;
+}
+
+.form-view-container .input-container {
+    margin: 10px 0;
+}
+
+.form-view-container .form-input {
+    margin: 4px 0;
+}

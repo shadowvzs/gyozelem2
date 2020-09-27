@@ -1,0 +1,136 @@
+.panel-container {
+    position: absolute;
+    top: 56px;
+    left: 28px;
+    font-family: cursive;
+    transform: scale(0, 0);
+    transition: all 0.5s ease-in-out;
+}
+
+.panel-container * {
+    user-select: none;
+}
+
+.panel-container.show {
+    transform: scale(1, 1);
+}
+
+.panel-container.minimize {
+    margin-left: -100%;
+}
+
+.panel-container[data-move="true"] {
+    position: fixed;
+    transition: none;
+    z-index: 9999;
+}
+
+.panel-container > .inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border: 1px outset #000;
+    padding: 2px;
+    display: flex;
+    background-color: #ccc;
+    flex-direction: column;
+}
+
+.panel-container > .inner > .header {
+    position: relative;
+    line-height: 22px;
+    padding-left: 20px;
+    border: 1px solid #999;
+    text-shadow: 1px 1px 2px #000, 0px 0px 1px #000;
+    color: #fff;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: #fff;
+}
+
+.panel-container > .inner > .header h4,
+.panel-container > .inner > .header h4 span {
+    cursor: default;
+    flex: 1;
+    font-size: 16px;
+}
+
+.panel-container > .inner > .header h4 {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.panel-container > .inner > .header > .close,
+.panel-container > .inner > .header > .minimize {
+    position: relative;
+    margin-left: 1px;
+    width: 22px;
+    height: 24px;
+    line-height: 22px;
+    font-size: 14px;
+    text-align: center;
+    cursor: pointer;
+}
+
+
+.panel-container > .inner > .content {
+    position: relative;
+    border: 1px inset rgba(0,0,0,0.5);
+    color: #000;
+    font-family: arial;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    font-size: 14px;
+    width: 100%;
+    overflow-y: auto;
+    flex-grow: 1;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-content: flex-start;
+}
+
+/* LIGHT BLUE THEME */
+.panel-container.blue-theme .header {
+    background: linear-gradient(to top, #cce 0%, #aac 100%);
+}
+
+.panel-container.blue-theme .minimize {
+    color: #fff;
+    border: 1px outset rgba(50, 50, 75, 0.5);
+    background: linear-gradient(to top, #eef 0%, #bbd 100%);
+}
+
+.panel-container.blue-theme .minimize:hover {
+    text-shadow: 0px 0px 2px #fff;
+    background: linear-gradient(to top, #fdd 0%, #c99 100%);
+}
+
+.panel-container.blue-theme .minimize:active {
+    border: 1px inset rgba(50, 50, 75, 0.5);
+    text-shadow: none;
+    background: linear-gradient(to top, #c99 0%, #fdd 100%);
+}
+
+.panel-container.blue-theme .close {
+    color: #fff;
+    border: 1px outset rgba(50, 50, 75, 0.5);
+    background: linear-gradient(to top, #fdd 0%, #c99 100%);
+}
+
+.panel-container.blue-theme .close:hover {
+    text-shadow: 0px 0px 2px #fff;
+    background: linear-gradient(to top, #ecc 0%, #c88 100%);
+}
+
+.panel-container.blue-theme .close:active {
+    border: 1px inset rgba(50, 50, 75, 0.5);
+    text-shadow: none;
+    background: linear-gradient(to top, #c88 0%, #ecc 100%);
+}
+
+.panel-container.blue-theme .content {
+    background: linear-gradient(rgba(255,255,255,0.73), rgba(210,210,255,0.73));
+}

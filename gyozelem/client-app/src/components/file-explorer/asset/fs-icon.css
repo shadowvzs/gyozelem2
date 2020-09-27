@@ -1,0 +1,68 @@
+:host .icon-wrapper {
+    position: relative;
+    box-sizing: content-box;
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: 0.3s;
+    padding: 0 4px;
+}
+
+:host .icon-wrapper:hover {
+    opacity: 1;
+}
+
+:host .icon-wrapper label {
+    font-size: 13px;
+}
+
+:host .icon-wrapper.align-bottom {
+    flex-direction: column;
+}
+
+:host .icon-wrapper.align-right {
+    flex-direction: row;
+}
+
+:host .icon-wrapper.align-right .label {
+    position: relative;
+    display: flex;
+    align-items: baseline;
+    padding: 0 4px;
+}
+
+:host .icon-wrapper .label input {
+    background: transparent;
+    border: transparent;
+    border-bottom: 1px solid #000;
+    padding: 0 6px;
+    margin: 0;
+    font-size: inherit;
+    box-sizing: border-box;
+}
+
+:host .icon-wrapper .title {
+    font-family: arial;
+    font-size: inherit;
+    padding-top: 4px;
+    width: 100%;
+    max-height: 3em;
+    overflow: hidden;
+    text-align: center;
+    word-break: break-word;
+}
+
+:host .icon-wrapper input[type="checkbox"] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    cursor: pointer;
+    opacity: 0;
+    transition: 0.3s ease-in-out;
+}
+
+:host .icon-wrapper:hover input[type="checkbox"],
+:host .icon-wrapper input[type="checkbox"]:checked {
+    opacity: 1;
+}

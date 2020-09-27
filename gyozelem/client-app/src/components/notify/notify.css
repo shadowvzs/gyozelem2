@@ -1,0 +1,80 @@
+:host {
+    position: fixed;
+    top: 0;
+    right: 0;
+    margin: 0 4px;
+    min-width: 200px;
+    max-width: 400px;
+    height: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 9999;
+    width: 300px;
+}
+
+:host .notify {
+    position: relative;
+    color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    padding: 15px;
+    padding-right: 20px;
+    width: auto;
+    max-width: 400px;
+    height: auto;
+    opacity: 1;
+    margin: 3px 0 3px 3px;
+    transform: translateX(100%);
+    font-family: arial;
+    font-size: 14px;
+    transition: transform 0.72s;
+    box-shadow: 0px 0 2px 2px rgba(0, 0, 0, 0.2);
+}
+
+:host .notify.warning {
+    border-color: rgba(255, 255, 0, 0.9);
+    background-color: rgba(255, 255, 0, 0.5);
+}
+
+:host .notify.notice {
+    border-color: rgba(0, 0, 200, 0.9);
+    background-color: rgba(0, 0, 200, 0.5);
+}
+
+:host .notify.success {
+    border-color: rgba(100, 100, 255, 0.9);
+    background-color: rgba(100, 100, 255, 0.5);
+}
+
+:host .notify.error {
+    border-color: rgba(255, 50, 50, 0.9);
+    background-color: rgba(255, 50, 50, 0.5);
+}
+
+:host .notify.normal {
+    border-color: rgba(0, 0, 0, 0.9);
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+:host .notify.slidein { transform: translateX(0%); }
+:host .notify.fade-out { 
+    opacity: 0;
+    transition: opacity 500ms ease-in-out;
+}
+
+:host .notify .close-notify {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-block;
+    margin: auto;
+    right: 10px;
+    font-family: arial;
+    font-size: 30px;
+    color: red;
+    opacity: 0.3;
+    cursor: pointer;
+    text-shadow: 1px 0 1px #000, -1px 0 1px #000, 0 -1px 1px #000, 0 1px 1px #000;
+}
+
+:host .notify .close-notify:hover { opacity: 0.7 }

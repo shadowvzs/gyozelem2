@@ -1,0 +1,535 @@
+:host {
+    position: absolute;
+    background-color: #2b2e31;
+    max-width: 400px;
+    width: 100%;
+    min-width: 200px;
+    height: auto;
+    color: #fff;
+    font-family: arial;
+    box-shadow: 0 0 10px rgba(0,0,0,0.9);
+}
+
+:host * { 
+    user-select: none;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+
+}
+
+:host .menu {
+    position: absolute;
+    display: flex;
+    flex-direction: column-reverse;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 5px;
+    border-radius: 3px;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    font-size: 12;
+    cursor: pointer;
+}
+
+:host .menu > div:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: rgb(255, 255, 150);
+  cursor: pointer;
+}
+
+:host .button {
+    cursor: pointer; 
+}
+
+:host .header {
+    position: relative;
+    width: 100%;
+    color: #fff;
+    font-weight: bold;
+    background: linear-gradient(#224, #558);
+    font-size: 14px;
+    padding: 5px 10px;
+    height: 23px;
+}
+
+:host .header .close {
+    position: absolute;
+    display: inline-block;
+    right: 2px;
+    top: 2px;
+    font-size: 27px;
+    border-radius: 4px;
+    background-color: rgba(255,0,0,1);
+    opacity: 0.5;
+    cursor: pointer;
+    line-height: 20px;
+    height: 20px;
+    width: 20px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.4);
+}
+
+:host .header .close a { 
+    position: relative;
+    display: block;
+    color: #fff;
+    width: 100%;
+    height: 100%;
+    top: -2px;
+ }
+
+ :host .header .minimize {
+    position: absolute;
+    display: inline-block;
+    right: 25px;
+    top: 2px;
+    font-size: 27px;
+    border-radius: 4px;
+    background-color: rgba(100, 100, 255, 0.7);
+    opacity: 0.5;
+    cursor: pointer;
+    line-height: 20px;
+    height: 20px;
+    width: 20px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.4);
+}
+
+:host .header .close:hover,
+:host .header .minimize:hover { opacity: 1 }
+
+:host .header .minimize a { 
+    position: relative;
+    display: block;
+    color: #fff;
+    width: 100%;
+    height: 100%;
+}
+
+:host .header .minimize a::after { 
+    position: absolute;
+    content: "";
+    border-bottom: 3px solid #fff;
+    width: 60%;
+    height: 100%;
+    top: -5px;
+    left: 20%;
+}
+
+:host .plist {
+    padding: 0 4px;
+    position: absolute;
+    top: 10px;
+    left: 4px;
+    bottom: 5px;
+    right: 3px;
+    overflow-y: auto;
+    border-radius: 10px;
+    background: #232528;
+    border: 1px solid rgba(0,0,0,0.25);
+    font-size: 13px
+}
+
+:host .plist ul {
+    width: 100%;
+    list-style: none;
+    background: #232528;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+:host .plist ul li {
+    cursor: pointer;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: 0.3s;
+    color: rgba(255, 255, 255, 0.5);
+    padding: 0 10px;
+}
+
+:host .plist ul li:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+    color: rgba(255, 255, 100, 0.75);
+}
+
+:host .plist ul li.selected {
+    color: red;
+    text-shadow: 0 0 5px rgba(0,0,0,0.9);
+}
+
+:host .details {
+    margin-top: 2px;
+    width: 100%;
+    padding: 10px;
+}
+
+:host .details .title {
+    background-color: rgba(0,0,0,0.5);
+    width: 100%;
+    padding: 4px 5px;
+    color: rgba(255,255,255,0.7);
+    box-shadow: inset 0 1px 0 0 #0d0e0f, inset 0 -1px 0 0 #3a3d42;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: 0.2s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+:host .details .title:hover { color: rgba(255,255,255,1); }
+
+:host .details .volume_row {
+    text-align: center;
+    clear: both;
+    width: 100%;
+    display: flex;
+    -ms-box-orient: horizontal;
+}
+
+:host .details .volume_row .volume_bar {
+    line-height: 9px;
+    height: 9px;
+    display: flex;
+    flex-shrink: 1;
+    width: 100%;
+}
+
+:host .details .volume_row .volume_bar .volume_dir {
+    width: 20px;
+    font-size: 16;
+    line-height: 8px;
+    height: 8px;
+    color: rgba(255,255,255,0.7);
+    padding: 0 2px;
+    display: inline-block;
+}
+
+:host .details .volume_row .volume_bar .volume_dir:first-child {
+    position: relative;
+    top: -2px;
+}
+
+:host .details .volume_row .volume_bar input.volume {
+    flex-grow: 1;
+    width: 100%;
+    min-width: 50px;
+    max-width: 200px;
+}
+
+:host .details .volume_row .spacer {
+    flex-grow: 1;
+    width: 100%;
+}
+
+:host .details .volume_row .speaker_icon {
+    position: relative;
+    top: -4px;
+    width: 50px;
+    color: rgba(255,255,255,0.8);
+}
+
+:host .details .volume_row .loop_icon {
+    position: relative;
+    top: -6px;
+    left: 3px;
+    font-size: 20px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+:host .details .volume_row .anchor_icon {
+    position: relative;
+    top: -3px;
+    left: 11px;
+    font-size: 16px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+:host .details .volume_row .random_icon {
+    position: relative;
+    top: -3px;
+    left: 19px;
+    font-size: 16px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+:host .details .volume_row .active {
+    text-shadow: 0 0 4px #ff0, 0 0 4px yellow;
+}
+
+:host .track {
+    width: 100%;
+    margin: 0 0 10px 0;
+}
+:host .track-timer {
+    position: relative;
+    margin: 10px 0 10px 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0,0,0,0.5);
+    padding: 4px 5px;
+    display: inline-block;
+    color: rgba(255,255,255,0.7);
+    box-shadow: inset 0 1px 0 0 #0d0e0f, inset 0 -1px 0 0 #3a3d42;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+:host .button {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    text-align: center;
+    font-size: 14px;
+    background: #3a3d42;
+    border-top: 1px solid #5a5d62;
+    border-left: 1px solid #5a5d62;
+    border-right: 1px solid #232528;
+    border-bottom: 1px solid #232528;
+    cursor: 'pointer';
+    padding-top: 1px;
+    display: inline-block;
+}
+
+:host .button:active {
+    top: 1px;
+    left: 1px;
+    border-top: 1px solid #232528;
+    border-left: 1px solid #232528;
+    border-right: 1px solid #5a5d62;
+    border-bottom: 1px solid #5a5d62;
+    background: #4a4d52;
+}
+
+:host .button:hover * { opacity: 1; }
+
+:host .button .play,
+:host .button .pause,
+:host .button .stop { 
+    width: 8px;
+    height: 8px;
+    display: inline-block;
+    opacity: 0.7;
+}
+
+:host .button .play {
+    border-style: solid;
+    border-width: 4px 0px 4px 8px;
+    box-sizing: border-box;
+    border-color: transparent transparent transparent #fff;
+}
+
+:host .button .pause {
+    border-style: double;
+    border-width: 0px 0px 0px 8px;
+    border-color: #fff;
+}
+
+:host .button .stop { border: 4px solid #fff; }
+
+:host input[type="range"] {
+    height: 10px;
+    margin: 0;
+    border: none;
+    padding: 1px 2px;
+    border-radius: 7px;
+    background: #232528;
+    box-shadow: inset 0 1px 0 0 #0d0e0f, inset 0 -1px 0 0 #3a3d42;
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+    -webkit-box-shadow: inset 0 1px 0 0 #0d0e0f, inset 0 -1px 0 0 #3a3d42;
+}
+
+:host input[type="range"]::-moz-range-track {
+    border: inherit;
+    background: transparent;
+}
+
+:host input[type="range"]::-ms-track {
+    border: inherit;
+    color: transparent;
+    background: transparent;
+}
+
+:host input[type="range"]::-ms-fill-lower { background: transparent; }
+:host input[type="range"]::-ms-fill-upper { background: transparent; }
+:host input[type="range"]::-ms-tooltip    { display: none; }
+:host input[type="range"]::-webkit-slider-thumb {
+    width: 20px;
+    height: 9px;
+    border: none;
+    border-radius: 6px;
+    background-image: linear-gradient(to bottom, #529de1 0, #245e8f 100%);
+    -webkit-appearance: none;
+}
+
+:host input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 9px;
+    border: 0;
+    border-radius: 6px;
+    background-image: linear-gradient(to bottom, #529de1 0, #245e8f 100%);
+}
+
+:host input[type="range"]::-ms-thumb {
+    width: 20px;
+    height: 9px;
+    border: 0;
+    border-radius: 6px;
+    background-image: linear-gradient(to bottom, #529de1 0, #245e8f 100%);
+}
+
+:host input[type="range"].volume::-ms-thumb,
+:host input[type="range"].volume::-moz-range-thumb,
+:host input[type="range"].volume::-webkit-slider-thumb {
+    width: 9px;
+    background-image: linear-gradient(to bottom, #e1e152 0, #8f8f24 100%);
+}
+
+:host .container {
+    position: relative;
+    min-width: 100%;
+    min-height: 200px;
+    overflow: hidden;
+}
+
+:host .container.scrolled .content {
+    padding-right: 18px;
+    right: -18px;
+}
+
+:host .container.scroll input[type="range"].scrollBar { display: block; }
+:host .container.scroll > div {
+    right: -35px;
+    padding-right: 30px;
+}
+
+:host .container input[type="range"].scrollBar {
+    position: absolute;
+    top: 50%;
+    display: none;
+    margin: -2px 0;
+    transform: rotate(90deg);
+    border-radius: 7px;
+    background: rgba(0,0,0,0.2);
+    box-shadow: inset 1px 0 0 0 #0d0e0f, inset -1px 0 0 0 #3a3d42;
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -webkit-box-shadow: inset 0 1px 0 0 #0d0e0f, inset 0 -1px 0 0 #3a3d42;
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+}
+
+:host .container input[type="range"].scrollBar::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 14px;
+    cursor: pointer;
+    animation: 0.2s;
+    box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
+    background: transparent;
+    border-radius: 25px;
+    border: 0px solid #000101;
+}
+
+:host .container input[type="range"].scrollBar::-webkit-slider-thumb {
+    box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
+    border: 0px solid #000000;
+    height: 12px;
+    width: 20px;
+    background: #65001c;
+    cursor: pointer;
+    margin-top: 1px;
+    border-radius: 12px;
+    background-image: linear-gradient(to bottom, #529de1 0, #245e8f 100%);
+    -webkit-appearance: none;
+}
+
+:host .container input[type="range"].scrollBar::-moz-range-track {
+    width: 100%;
+    height: 12px;
+    cursor: pointer;
+    animation: 0.2s;
+    box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
+    background: transparent;
+    border-radius: 25px;
+    border: 0px solid #000101;
+}
+
+:host .container input[type="range"].scrollBar::-moz-range-thumb {
+    box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
+    border: 0px solid #000000;
+    height: 12px;
+    width: 20px;
+    background: #65001c;
+    cursor: pointer;
+    border-radius: 12px;
+    background-image: linear-gradient(to bottom, #529de1 0, #245e8f 100%);
+}
+
+:host .container input[type="range"].scrollBar::-ms-track {
+    width: 100%;
+    height: 12px;
+    cursor: pointer;
+    animation: 0.2s;
+    background: transparent;
+    border-color: transparent;
+    border-width: 39px 0;
+    color: transparent;
+}
+
+:host .container input[type="range"].scrollBar::-ms-fill-lower {
+    background: #ac51b5;
+    border: 0px solid #000101;
+    border-radius: 50px;
+    box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
+}
+:host .container input[type="range"].scrollBar::-ms-fill-upper {
+    background: #ac51b5;
+    border: 0px solid #000101;
+    border-radius: 50px;
+    box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
+}
+:host .container input[type="range"].scrollBar::-ms-thumb {
+    box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
+    border: 0px solid #000000;
+    height: 11px;
+    width: 20px;
+    border-radius: 7px;
+    background: #65001c;
+    cursor: pointer;
+    background-image: linear-gradient(to bottom, #529de1 0, #245e8f 100%);
+}
+
+:host .container input[type="range"].scrollBar:focus {
+    outline: thin dotted transparent;
+}
+
+:host .container input[type="range"].scrollBar:focus::-webkit-slider-runnable-track,
+:host .container input[type="range"].scrollBar:focus::-ms-fill-lower,
+:host .container input[type="range"].scrollBar:focus::-ms-fill-upper { 
+    background: rgba(0,0,0,0.5);
+}
+
+:host input[type="file"] {
+    position: absolute;
+    top: -1000px;
+    opacity: 0;
+    left: -1000px;
+}
+
+.blink {
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0% {opacity: 0}
+    49%{opacity: 0}
+    50% {opacity: 1}
+}

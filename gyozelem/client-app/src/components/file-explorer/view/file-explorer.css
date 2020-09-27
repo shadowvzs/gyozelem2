@@ -1,0 +1,110 @@
+:host {
+    min-width: 700px;
+    min-height: 500px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+:host ul, :host ul li {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+:host .addressbar {
+    position: relative;
+    min-height: 34px;
+    height: 34px;
+    color: #000;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    padding-left: 1px;
+    border: 1px solid #aaa;
+    background-color: #eee;
+    width: calc(100% - 4px);
+}
+
+:host .addressbar span {
+    text-align: center;
+    border: 1px outset #aaa;
+    margin: 1px;
+    border-radius: 2px;
+    cursor: pointer;
+    width: 32px;
+    height: 29px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #777;
+    background-color: #ccc;
+}
+
+:host .addressbar span:hover {
+    border: 1px outset #999;
+    background-color: rgba(0, 0, 0, 0.15);
+    color: #333;
+}
+
+:host .addressbar span:active {
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 1px inset #aaa;
+}
+
+:host .addressbar img {
+    height: 100%;
+}
+
+:host .addressbar nav {
+    position: relative;
+    left: 2px;
+    background-color: rgba(255,255,200,0.5);
+    padding: 0 10px;
+    border: 1px inset rgba(255,255,255,0.8);
+    flex: 1;
+    margin: 2px 0;
+}
+
+:host .addressbar nav ul {
+    display: flex;
+    white-space: nowrap;
+    height: 100%;
+}
+
+:host .addressbar nav ul li {
+    align-self: center;
+    display: inline-block;
+    font-size: 12px;
+    transition: 0.3s;
+    font-weight: bold;
+    text-shadow: none;
+    user-select: none;
+}
+
+:host .addressbar nav ul li:not(.inactive):hover {
+    font-weight: bold;
+    text-shadow: 0 0 4px rgba(0, 0, 150, 0.4);
+    cursor: pointer;
+}
+
+:host .addressbar nav ul li:not(:last-child):after {
+    font-size: 12px;
+    content: "/";
+}
+
+:host .main-box {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+}
+
+:host .main-box .content-list {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    flex: 1;
+    padding: 4px;
+    align-content: flex-start;
+}
