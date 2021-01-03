@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -14,12 +15,19 @@ namespace API.Controllers
     public class RuntimeController : BaseController
     {
 
+        private readonly IConfiguration _configuration;
+
+        public RuntimeController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         // GET api/tests/
         [AllowAnonymous]
         [HttpGet]
         public string Version()
         {
-            return "V1";
+            return _configuration["Version"];
         }
     }
 }

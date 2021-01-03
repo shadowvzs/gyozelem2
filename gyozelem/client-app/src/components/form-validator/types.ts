@@ -2,10 +2,12 @@ export declare namespace IFormValidator {
     interface State {
         errors: Record<string, IValidationError[]>;
         isDirty: boolean;
-        model: IBaseModel
+        model: Record<keyof IBaseModel, any>
         touched: Record<string, boolean>;
     }
 }
+
+export type ErrorFormatter = (errors: IValidationError[], errorSeparator?: string) => string;
 
 export type IVCondition<T> = (x: string, o?: T) => boolean;
 export type IValidatorOption<T> = any[] | IVCondition<T>;
@@ -28,8 +30,6 @@ export type IValidatorData = Record<string, Record<string, IValidator> | IValida
 export type ValidationCondition<T> = (x: any, o?: T) => false | IValidationError;
 export type IValidation<T = any> = ObjPart<T, ValidationCondition<T>[]>;
 
-export interface IBaseModel<T = any> {
-    constructor: Function & { $validation?: IValidation<T>; }
-}
+export type IBaseModel<T = any> = T & { constructor: Function; }
 
 export type IDecoratorSignature = any;

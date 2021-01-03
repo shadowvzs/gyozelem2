@@ -1,16 +1,26 @@
 div.menu-container {
     position: absolute;
-    background-color: rgba(255, 255, 255, 0.65);
+    background-color: rgba(255, 255, 255, 0.75);
     border: 1px solid rgba(0, 0, 0, 0.25);
+    box-shadow: 10px 10px 10px rgba(0,0,0,0.25);
+    border-radius: 4px;
 }
 
 div.menu-container li {
     min-width: 200px;
     padding: 8px;
     transition: 0.3s ease;
+    color: rgba(0, 0, 0, 1);
 }
 
 div.menu-container li:hover {
     background-color: rgba(0, 0, 0, 0.1);
     cursor: pointer;
+}
+
+
+div.menu-container li.disabled {
+    color: rgba(0, 0, 0, 0.5);
+    cursor: none;
+    pointer-events: none;
 }

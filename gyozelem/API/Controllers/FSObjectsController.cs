@@ -18,22 +18,12 @@ namespace API.Controllers
         // GET api/fsobjects/
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<List.FSObjectsEnvelope>> List(int? limit, int? offset, FSType? type, FSStatus? status, int? flag, string sortKey = null, string sortDirection = null)
+        public async Task<ActionResult<List.FSObjectsEnvelope>> List(Guid? parentId, int? limit, int? offset, FSType? type, FSStatus? status, int? flag, string sortKey = null, string sortDirection = null)
         {
-            return await Mediator.Send(new List.Query(limit, offset, type, status, flag, sortKey, sortDirection));
-        }
-
-        
-        // GET /api/fsobjects/6319491A-EBDA-49CE-BA7F-7917D4B3E1A9
-        [HttpGet("{id}")]
-        [Authorize]
-        public async Task<ActionResult<FSObject>> Details(Guid id)
-        {
-            return await Mediator.Send(new Details.Query{Id = id} );
+            return await Mediator.Send(new List.Query(parentId, limit, offset, type, status, flag, sortKey, sortDirection));
         }
 
         // POST api/fsobjects
-        [AllowAnonymous]
         [HttpPost("")]
         public async Task<ActionResult<FSObject>> Create(Create.Command command)
         {
@@ -41,7 +31,6 @@ namespace API.Controllers
         }
 
         // POST api/fsobjects/6319491A-EBDA-49CE-BA7F-7917D4B3E1A9/uploadchunk
-        [AllowAnonymous]
         [HttpPost("{id}/uploadchunk")]
         public async Task<ActionResult<Unit>> UploadChunk(Guid id, [FromBody] byte[] rawData)
         {
@@ -49,7 +38,6 @@ namespace API.Controllers
         }
 
         // GET api/fsobjects/6319491A-EBDA-49CE-BA7F-7917D4B3E1A9/uploadcomplete
-        [AllowAnonymous]
         [HttpGet("{id}/uploadcomplete")]
         public async Task<ActionResult<FSObject>> UploadComplete(Guid id)
         {
@@ -58,29 +46,35 @@ namespace API.Controllers
 
 
         // PUT api/fsobjects/6319491A-EBDA-49CE-BA7F-7917D4B3E1A9
-        [AllowAnonymous]
+        // [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult<FSObject>> Edit(Edit.Command command)
         {
             return await Mediator.Send(command);
         }
 
-        /*
-        // PUT api/fsobjects/6319491A-EBDA-49CE-BA7F-7917D4B3E1A9
-        [HttpPut("{id}")]
-        [Authorize]
-        public async Task<ActionResult<Unit>> Edit(Guid id, Edit.Command command)
-        {
-            command.Id = id;
-            return await Mediator.Send(command);
-        }
-        */
         // DELETE api/fsobjects/6319491A-EBDA-49CE-BA7F-7917D4B3E1A9
         [HttpDelete("{id}")]
-        [Authorize]
+         // [Authorize]
         public async Task<ActionResult<Unit>> Delete(Guid id)
         {
-            return await Mediator.Send(new Delete.Command{Id = id});
+            return await Mediator.Send(new Delete.Command{ Ids = new List<Guid>(){ id } });
+        }
+
+        // DELETE api/fsobjects
+        [HttpDelete]
+        // [Authorize]
+        public async Task<ActionResult<Unit>> Delete(List<Guid> ids)
+        {
+            return await Mediator.Send(new Delete.Command{ Ids = ids });
+        }
+
+        // PUT api/fsobjects
+        [HttpPut]
+        // [Authorize]
+        public async Task<ActionResult<Unit>> BulkUpdate(List<FSObject> items)
+        {
+            return await Mediator.Send(new BulkUpdate.Command{ Items = items });
         }
     }
 }

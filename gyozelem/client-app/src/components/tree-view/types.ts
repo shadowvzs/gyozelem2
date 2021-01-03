@@ -1,4 +1,4 @@
-import { IArrayValueMap, ITreeObject, TreeKey } from "../../core/util/core";
+import { IHierarchyMap, ITreeObject, TreeKey } from "../../util/core";
 import { JSX } from '@stencil/core';
 
 export declare namespace ITreeView {
@@ -9,6 +9,7 @@ export declare namespace ITreeView {
         getParentId: (item: T) => TreeKey;
         getRootItem: () => T;
         onSelect: (id: TreeKey) => void;
+        isEnabled?: (item: T) => boolean;
 
         rootId: TreeKey;
         activeId: TreeKey;
@@ -16,6 +17,6 @@ export declare namespace ITreeView {
     }
     
     interface State<T = any> {
-        treeMap: IArrayValueMap<ITreeObject<T>>;
+        treeMap: IHierarchyMap<ITreeObject<T>>;
     }
 }

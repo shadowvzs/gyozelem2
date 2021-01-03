@@ -1,7 +1,10 @@
 :host {
-    flex: auto;
+    position: absolute;
+    display: block;
+    top: 0;
+    left: 0;
+    height: 100%;
     width: 100%;
-    max-width: 250px;
     box-sizing: border-box;
     border-right: 1px solid rgba(0,0,0,0.2);
     background: linear-gradient(to right, #fff, #ddd);
@@ -48,6 +51,7 @@
 
 :host ul li span {
     opacity: 0.75;
+    transition: 0.3s;
 }
 
 :host ul li span:hover {
@@ -58,4 +62,8 @@
 :host ul li span {
     padding-right: 4px;
     vertical-align: middle;
+}
+
+:host li > .underline {
+    text-decoration: underline;
 }

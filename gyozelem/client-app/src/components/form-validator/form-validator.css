@@ -1,3 +1,7 @@
+.full-width {
+    width: 100%;
+}
+
 form .form-input[data-valid="false"], 
 form .form-input[data-valid="false"], 
 form .form-input[data-valid="false"] {

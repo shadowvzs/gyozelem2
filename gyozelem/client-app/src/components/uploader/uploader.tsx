@@ -1,8 +1,6 @@
-import { Component, Method, Host, h } from '@stencil/core';
-import { store } from './store';
-import { UploadService } from './service';
+import { Component, Host, h } from '@stencil/core';
+import { UploadService, store } from '../../services/uploader-service';
 import { IUploader } from './types';
-
 
 const styles = {
     mini: {
@@ -13,9 +11,6 @@ const styles = {
         top: '10px'
     }
 };
-
-
-console.log(store)
 
 @Component({
     tag: 'uploader-container',
@@ -29,11 +24,6 @@ export class Uploader {
 
     disconnectedCallback() {
         this.service.dispose();
-    }
-
-    @Method()
-    upload(config?: IUploader.Config) {
-        return this.service.upload(config);
     }
 
     renderListItem = ({ name, status }: { name: string, status: IUploader.Progress['status'] }) => {

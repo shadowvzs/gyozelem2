@@ -1,0 +1,120 @@
+.login-page {
+    position: relative;
+    height: 100%;
+}
+
+.login-page .layout.video-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.login-page .layout.video-background video {
+    width: 100vw;
+    height: 100vh;
+    object-fit: fill;
+}
+
+.login-page .layout.video-background a {
+    perspective: 800px;
+}
+
+.login-page .layout.video-background img {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    height: 128px;
+    width: 128px;
+    background-color: rgba(255,254,255,0.85);
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.5);
+    box-shadow: 0 0 7px 7px rgba(0,0,0,0.1) inset, 0 0 7px 7px rgba(0,0,0,0.1);
+}
+
+.login-page .layout.video-background img:hover {
+    transform: rotate3d(0, 1, 0, 360deg);
+}
+
+.login-page .login-form-wrapper {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255,255,255,0.5);
+    border: 1px solid rgba(0,0,0,0.25);
+    padding: 16px;
+    box-shadow: 0 0 15px 15px rgba(0,0,0,0.15);
+    border-radius: 16px;
+}
+
+.login-page .login-form form {
+    display: flex;
+    flex-direction: column;
+}
+
+.login-page .login-form h3 {
+    margin-top: 4px;
+    margin-bottom: 12px;
+    color: white;
+    font-family: cursive;
+    text-shadow: 0 0 5px rgba(0,0,0,0.75);
+    text-align: center;
+    font-size: 24px;
+}
+
+.login-page .login-form input {
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.login-page .login-form .lp-actions {
+    display: flex;
+    justify-content: space-around;
+    padding-top: 24px;
+}
+
+.login-page .login-form .lp-button {
+    position: relative;
+    padding: 4px 8px;
+    display: inline-block;
+    margin: 0 2px;
+    border-radius: 3px;
+    color: inherit;
+    background: linear-gradient(to top, rgb(207, 207, 207) 16%, rgb(252, 252, 252) 79%);
+    border: 1px solid rgba(0,0,0,0.2);
+    font-size: 14px;
+    line-height: 1.4em;
+    cursor: pointer;
+}
+
+.login-page .login-form .lp-button a {
+    color: inherit;
+}
+
+.login-page .login-form footer {
+    padding-top: 24px;
+}
+
+.login-page .login-form footer a {
+    font-weight: bold;
+
+}
+
+.login-page .login-form .input-wrapper {
+    position: relative;
+}
+
+
+.login-page .login-form  .input-wrapper input {
+    border-radius: 2px;
+    padding-right: 32px;
+    width: 100%;
+}
+
+.login-page .login-form .input-wrapper .input-info {
+    position: absolute;
+    right: 4px;
+    top: 7px;
+}

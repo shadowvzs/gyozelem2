@@ -1,0 +1,36 @@
+.social-info {
+    font-family: "Open Sans", serif;
+    width: 100%;
+    max-width: 230px;
+    margin: 20px 50px;
+    padding: 10px 10px;
+    font-size: 14px;
+    background-color: #ffc;
+    background-image: url('/assets/layout/transp_bg2.png');
+    background-repeat: repeat;
+    border: 1px solid rgba(100,100,100,0.8);
+    box-shadow: 0 0 20px rgba(0,0,0,0.8);
+    border-radius: 5px;
+    text-shadow: 0.1em 0.1em 0.2em #aaa;
+    display: inline-block;
+    line-height: 21px;
+    text-align: center;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+.social-info .fb-icon-wrapper {
+    display: inline-block;
+    padding-top: 4px;
+}
+
+.social-info .yt-icon-wrapper {
+    display: inline-block;
+    padding-top: 4px;
+    margin-bottom: 16px;
+}
+
+.social-info .mt-4 {
+    margin-top: 16px;
+}

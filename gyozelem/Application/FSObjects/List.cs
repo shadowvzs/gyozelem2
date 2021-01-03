@@ -23,6 +23,7 @@ namespace Application.FSObjects
         public class Query : IRequest<FSObjectsEnvelope>
         {
             public Query(
+                Guid? parentId,
                 int? limit, 
                 int? offset, 
                 FSType? type, 
@@ -31,6 +32,7 @@ namespace Application.FSObjects
                 string sortKey, 
                 string sortDirection
             ) {
+                ParentId = parentId;
                 Limit = limit;
                 Offset = offset;
                 Type = type;
@@ -40,6 +42,7 @@ namespace Application.FSObjects
                 SortDirection = sortDirection;
             }
 
+            public Guid? ParentId { get; set; }
             public int? Limit { get; set; }
             public int? Offset { get; set; }
             public FSType? Type { get; set; }
@@ -69,6 +72,10 @@ namespace Application.FSObjects
                     // .Where(x => x.Date >= request.StartDate)
                     .OrderBy(x => x.CreatedAt)
                     .AsQueryable();
+
+                if (request.ParentId.HasValue) {
+                    queryable = queryable.Where(x => x.ParentId == request.ParentId.Value);
+                }
 
                 if (request.Type.HasValue) {
                     queryable = queryable.Where(x => x.Type == request.Type.Value);

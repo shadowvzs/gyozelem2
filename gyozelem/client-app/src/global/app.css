@@ -1,25 +1,57 @@
-/*
-  Global App CSS
-  ----------------------
-  Use this file for styles that should be applied to all components.
-  For example, "font-family" within the "body" selector is a CSS property
-  most apps will want applied to all components.
+@font-face {
+    font-family: "Berkshire Swash";
+    src: url("../assets/font/BerkshireSwash.ttf");
+}
 
-  Any global CSS variables should also be applied here.
-*/
+@font-face {
+    font-family: "Kalam";
+    src: url("../assets/font/Kalam.ttf");
+}
 
+@font-face {
+    font-family: "Kalam";
+    src: url("../assets/font/KalamBold.ttf");
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: "Open Sans";
+    src: url("../assets/font/OpenSans.ttf");
+
+}
+
+@font-face {
+    font-family: "Open Sans";
+    src: url("../assets/font/OpenSansBold.ttf");
+	font-weight: bold;
+}
+
+@font-face {
+    font-family: "Open Sans";
+    src: url("../assets/font/OpenSansSemibold.ttf");
+    font-weight: 400;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+	  outline: none;
+  	text-decoration: none;
+	  list-style: none;
+}
+
+:focus {outline:none;}
+::-moz-focus-inner {border:0;}
 
 body {
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0px;
-    padding: 0px;
-    list-style: none;
-    text-decoration: none;
-    outline: none;
+.error {
+    color: var(--fs-icon-color-error);
 }
 
-html, body { height: 100%; }
+.active {
+    color: var(--fs-icon-color-active);
+}

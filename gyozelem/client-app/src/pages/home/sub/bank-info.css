@@ -1,0 +1,26 @@
+.bank-info {
+    font-family: "Open Sans", serif;
+    width: 100%;
+    max-width: 230px;
+    margin: 20px 50px;
+    padding: 10px 10px;
+    font-size: 14px;
+    color: #336;
+    background: linear-gradient(70deg, #99f, #ddf);
+    border: 1px solid rgba(100,100,100,0.5);
+    border-radius: 5px;
+    text-shadow: 0.1em 0.1em 0.2em #aaa;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    display: inline-block;
+    line-height: 21px;
+    text-align: center;
+    min-height: 400px;
+}
+
+.bank-info .mb-3 {
+    padding-bottom: 12px;
+}
+
+.bank-info .mb-2 {
+    padding-bottom: 8px;
+}

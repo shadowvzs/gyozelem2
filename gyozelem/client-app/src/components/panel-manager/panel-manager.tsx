@@ -1,11 +1,9 @@
 import { Component, State, Element, Host, h } from '@stencil/core';
 import { IPanelManager } from './types';
-import Draggable from "../../core/util/draggable";
-import { guid, array2TreeMap, getChildIds, delay } from "../../core/util/core";
-
-interface RegistryEvent extends Event {
-    detail: Partial<IPanelManager.Config>;
-}
+import Draggable from "../../util/draggable";
+import { guid, array2Hierarchy, delay } from "../../util/core";
+import { broadcast } from '../../global/Broadcast';
+import { DateEx } from '../../model/DateEx';
 
 @Component({
     tag: 'panel-manager',
@@ -20,34 +18,20 @@ export class PanelManager {
     @State()
     private state: IPanelManager.State = {
         activePanelId: '',
-        panels: array2TreeMap<IPanelManager.Config>([], item => item.windowId, item => item.callerWindowId, { windowId: '-1' } ),
+        panels: array2Hierarchy<IPanelManager.Config>([], item => item.windowId, item => item.callerWindowId, { windowId: '-1' } ),
     };
 
-    private actionDispatcherElem = document;
-
-    componentWillLoad() {
-        document.addEventListener('windowRegistry', this.windowRegistry);
-        this.actionDispatcherElem.addEventListener('componentAction', this.componentActionHandler);
-    }
-
-    disconnectedCallback() {
-        document.removeEventListener('windowRegistry', this.windowRegistry);
-        this.actionDispatcherElem.removeEventListener('componentAction', this.componentActionHandler);
-    }
-
-    private windowRegistry = (e: RegistryEvent) => {
-        const { windowId } = e.detail;
-        if (windowId) {
+    private openPanelSubscription = broadcast.on('panel:init', (config: Partial<IPanelManager.Config>) => {
+        const { windowId } = config;
+        if (windowId && this.state.panels.valueMap[windowId]) {
             // focus to existing window
         } else {
-            this.createNewWindow(e.detail);
+            this.createNewWindow(config);
         }
         this.state.activePanelId = windowId;
-        console.log('new window', e, this.$elem);
-    }
+    });
 
-    private componentActionHandler = (e: IPanelManager.SimpleEvent) => {
-        const { id, type } = e.detail;
+    private panelActionSubscription = broadcast.on('panel:action', ({ id, type }: IPanelManager.BasicPanelAction) => {
         switch(type) {
             case 'MINIMIZE':
                 break;
@@ -55,19 +39,16 @@ export class PanelManager {
                 this.closeWindows(id);
                 break;
         }
-    }
+    });
 
-    private emitBasicEvent = (id: string, type: IPanelManager.BaseEventTypes) => {
-        const event = new CustomEvent('componentAction', { detail: { id, type: 'CLOSE' } });
-        const cbName = 'onWindow' + type[0] + type.substr(1).toLowerCase();
-        const $elem = this.state.panels.valueMap[id].item.elem;
-        if (typeof $elem[cbName] === 'function') { $elem[cbName](); }
-        this.actionDispatcherElem.dispatchEvent(event);
+    disconnectedCallback() {
+        this.openPanelSubscription.unsubscribe();
+        this.panelActionSubscription.unsubscribe();
     }
 
     private closeWindows = (id: string) => {
         const valueMap = this.state.panels.valueMap;
-        const ids = getChildIds(this.state.panels, id, []).reverse();
+        const ids = this.state.panels.getChildIds(id).reverse();
         const elems = ids.filter(panelId => valueMap[panelId]).map(pid => valueMap[pid].item.elem);
         this.state.panels.remove(id, ids);
         elems.forEach(async (e) => {
@@ -83,43 +64,70 @@ export class PanelManager {
     private createNewWindow(config: Partial<IPanelManager.Config>) {
         const { componentTag, containerConfig, elem } = config;
         let $elem = elem || document.createElement(componentTag);
-        const id = config.newWindowId ?? guid();
+        const id = config.windowId ?? guid();
         if (config.componentProps) {
             config.componentProps['onClose'] = () => this.closeWindows(id);
             Object.entries(config.componentProps).forEach(([key, value]) => $elem[key] = value);
         }
+
         const $cmp = $elem;
         if (containerConfig) {
             const panelContainer = document.createElement('div');
-            panelContainer.innerHTML = `
-                <div class='inner'>
-                    <div class='header no-select'>
-                        <h4> ${containerConfig.title || 'New Window'} </h4>
-                        ${!containerConfig.hideMinimize ? '<div class="minimize">_</div>' : ''}
-                        ${!containerConfig.hideClose ? '<div class="close">✖</div>' : ''}
-                    </div>
-                    <div class='content'></div>
-                </div>`;
-            panelContainer.querySelector('.content').appendChild($elem);
+            if (containerConfig.customHeader) {
+                panelContainer.innerHTML = `<div class='content pe'></div>`;
+            } else {
+                panelContainer.innerHTML = `
+                    <div class='inner ${containerConfig.fixedPosition ? 'fixed' : ''}'>
+                        <div class='header pe no-select'>
+                            <h4> ${containerConfig.title || 'New Window'} </h4>
+                            ${!containerConfig.hideMinimize ? '<div class="minimize">_</div>' : ''}
+                            ${!containerConfig.hideClose ? '<div class="close">✖</div>' : ''}
+                        </div>
+                        <div class='content pe'></div>
+                    </div>`;                
+            }
+            panelContainer.querySelector('.content.pe').appendChild($elem);
             panelContainer.className = `panel-container ${containerConfig.theme || 'blue-theme'}`;
             panelContainer.dataset.windowId = id;
-            const header = panelContainer.querySelector<HTMLElement>('.inner div.header');
-            if (!containerConfig.hideMinimize) {
-                header.querySelector<HTMLElement>('.minimize').onclick = () => this.emitBasicEvent(id, 'MINIMIZE');
-            }
-
-            if (!containerConfig.hideClose) { 
-                header.querySelector<HTMLElement>('.close').onclick = () => this.emitBasicEvent(id, 'CLOSE');                
-            }
 
             $elem = panelContainer;
-            if (!containerConfig.fixedPosition) {
-                new Draggable($elem, header);
+            
+            if (containerConfig.mouseEvent) {
+                const { x, y } = containerConfig.mouseEvent;
+                $elem.style.left = x + 'px';
+                $elem.style.top = y + 'px';
+            }
+
+            if (containerConfig.fixedPosition && containerConfig.position) {
+                const pos = Object.entries(containerConfig.position);
+                pos.forEach(([key, value]) => {
+                    $elem.style[key] = typeof value !== 'string' ? (value + 'px') : value;
+                });
             }
         }
         
         $cmp.dataset.componentId = id;
         this.$elem.appendChild($elem);
+
+        if (containerConfig) {
+            setTimeout(() => {
+
+                const header = $elem.querySelector<HTMLElement>(containerConfig.customHeader || '.inner div.header.pe');
+
+                if (header) {
+                    const minimizeBtn = header.querySelector<HTMLElement>('.minimize');
+                    if (minimizeBtn) minimizeBtn.onclick = () => broadcast.emit('panel:action', { id, type: 'MINIMIZE' });
+                    const closeBtn = header.querySelector<HTMLElement>('.close');
+                    if (closeBtn) closeBtn.onclick = () => broadcast.emit('panel:action', { id, type: 'CLOSE' });                
+                }
+    
+                if (!containerConfig.fixedPosition) {
+                    new Draggable($elem, header);
+                }
+    
+
+            }, 1000)
+        }
 
         if (containerConfig && containerConfig.initState !== 'hide') {
             setTimeout(() => $elem.classList.add(containerConfig.initState || 'show'), 100);
@@ -130,11 +138,10 @@ export class PanelManager {
             elem: $elem,
             component: $cmp,
             windowId: id,
-            createdAt: new Date(),
+            createdAt: new DateEx(),
         }
 
         $elem['windowConfig'] = windowConfig;
-        // $elem['onClose'] = () => windowConfig.onClose;
 
         this.state.panels.add({
             id: windowConfig.windowId,

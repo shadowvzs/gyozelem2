@@ -1,5 +1,6 @@
-import { Component, Prop, h, Method } from '@stencil/core';
-import { IAvaliableNotifyTypes, IMessage } from './types';
+import { Component, Prop, h } from '@stencil/core';
+import { broadcast } from '../../global/Broadcast';
+import { INotify } from './types';
 
 @Component({
     tag: 'notify-container',
@@ -19,7 +20,7 @@ export class NotifyContainer {
     private CLOSE_CLASS = 'close-notify';
     private TRANSITION_CLASS = 'slidein';
 
-    private newMessageElement = ({ closeClass, message, onTransitionEnd, type }: IMessage) => {
+    private newMessageElement = ({ closeClass, message, onTransitionEnd, type }: INotify.Message) => {
         const $msg = document.createElement('div');
         $msg.classList.add('notify', type);
         $msg.ontransitionend = onTransitionEnd;
@@ -33,8 +34,7 @@ export class NotifyContainer {
         return $msg;
     };
 
-    @Method() 
-    send(type: IAvaliableNotifyTypes, message: string) {
+    private sendSubscription = broadcast.on('notify:send', ({ type, message }: { type: INotify.Types, message: string }) => {
         const $newMsg = this.newMessageElement({ type, message, onTransitionEnd: this.onTransitionEnd, closeClass: this.CLOSE_CLASS});
         const duration = this.NOTIFY_DURATION + this.LETTER_DURATION_RATIO * message.length;
         const timer = setTimeout(
@@ -44,7 +44,7 @@ export class NotifyContainer {
         this.map.set($newMsg, timer);
         this.$container.appendChild($newMsg);
         setTimeout( () => $newMsg.classList.add(this.TRANSITION_CLASS), 100);
-    }
+    });
 
     private onTransitionEnd = (event: Event): void => {
         const $target = event.target as HTMLDivElement;
@@ -59,6 +59,9 @@ export class NotifyContainer {
         elem.remove();
     }
 
+    disconnectedCallback() {
+        this.sendSubscription.unsubscribe();
+    }
 
     render() {
         return (

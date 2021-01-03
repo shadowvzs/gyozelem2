@@ -1,26 +1,25 @@
-import { IArrayValueMap, ITreeObject } from "../../core/util/core";
+import { DateEx } from "../../model/DateEx";
+import { IHierarchyMap, ITreeObject } from "../../util/core";
 
 export declare namespace IPanelManager {
 
     type BaseEventTypes = 'MINIMIZE' | 'CLOSE';
 
-    interface SimpleDetail {
+    interface BasicPanelAction {
         id: string;
         type: BaseEventTypes; 
-    }
-
-    interface SimpleEvent extends Event {
-        detail: SimpleDetail;
     }
 
     interface ContainerConfig {
         title?: string
         fixedPosition?: boolean;
         position?: Record<'left' | 'right' | 'top' | 'bottom', string>;
+        mouseEvent?: MouseEvent;
         width?: string;
         height?: string;
         theme?: 'blue-theme';
         initState?: 'show' | 'hide';
+        customHeader?: string;
 
         hideMinimize?: boolean;
         hideClose?: boolean;
@@ -32,7 +31,6 @@ export declare namespace IPanelManager {
         elem?: HTMLElement;
         component?: HTMLElement;
         windowId: string;
-        newWindowId?: string
         containerConfig?: ContainerConfig
         panelHook?: (config: Config) => void;
         onClose?: () => void;
@@ -40,11 +38,11 @@ export declare namespace IPanelManager {
         linkWithCaller?: boolean;
         callerWindowId?: string;
 
-        createdAt?: Date;
+        createdAt?: DateEx;
     }
     
     interface State {
-        panels: IArrayValueMap<ITreeObject<IPanelManager.Config>>;
+        panels: IHierarchyMap<ITreeObject<IPanelManager.Config>>;
         activePanelId: string;
     }
 

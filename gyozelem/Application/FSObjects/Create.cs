@@ -1,10 +1,13 @@
 using MediatR;
 using Domain;
 using Persistence;
-using Microsoft.EntityFrameworkCore;
+using Util;
+
 using FluentValidation;
 using Application.Errors;
 using Application.Interfaces;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 
 using System;
 using System.Net;
@@ -48,21 +51,32 @@ namespace Application.FSObjects
             {
                 _context = context;
                 _userAccessor = userAccessor;
+            
             }
 
             public async Task<FSObject> Handle(Command request, CancellationToken cancellationToken)
             {
-
-                var user = await _context.Users.SingleOrDefaultAsync(x => 
-                    x.UserName == _userAccessor.GetCurrentUsername());
+                var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == _userAccessor.GetCurrentUsername());
+                if (user == null || (user.Rank != AppUserRank.Editor && user.Rank != AppUserRank.Admin))
+                {
+                    throw new RestException(HttpStatusCode.Unauthorized);
+                }
 
                 var isFile = request.Type != FSType.FOLDER;
                 var status = request.Status.GetValueOrDefault(isFile ? FSStatus.Uploading : FSStatus.Ok);
-                var createdBy = user != null ? new Guid(user.Id) : Guid.Empty;
 
+                var mime = new MimeType(request.Name);
+                if (request.MetaData != null) {
+                    request.MetaData.MimeType = mime.Mime;
+                }
+                if (request.Type == FSType.UNKNOWN) {
+                    request.Type = mime.Type;
+                }
+
+                var id = request.Id == Guid.Empty ? Guid.NewGuid() : request.Id;
                 var fsobject = new FSObject
                 {
-                    Id = request.Id,
+                    Id = id,
                     Name = request.Name,
                     ParentId = request.ParentId,
                     Status = status,
@@ -73,15 +87,15 @@ namespace Application.FSObjects
                     Url = request.Url ?? "",
                     MetaData = request.MetaData,
                     CreatedAt = DateTime.Now,
-                    CreatedBy = createdBy,
+                    CreatedBy = Guid.Parse(user.Id),
                     UpdatedAt = null,
                     UpdatedBy = null
                 };
 
                 if (!string.IsNullOrEmpty(request.Url)) {
                     var wholeBlob = Convert.FromBase64String(fsobject.Url);
-                    fsobject.Url = "/assets/" + fsobject.Name;
-                    System.IO.File.WriteAllBytes("wwwroot" + fsobject.Url, wholeBlob);
+                    fsobject.Url = FSObjectConfig.GetRelativePath(id.ToString() + '_' + fsobject.Name);
+                    System.IO.File.WriteAllBytes(FSObjectConfig.GetWholePath(id.ToString() + '_' + fsobject.Name), wholeBlob);
                 }
 
                 _context.FSObjects.Add(fsobject);

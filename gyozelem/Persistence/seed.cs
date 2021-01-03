@@ -15,6 +15,7 @@ namespace Persistence
             if (!userManager.Users.Any())
             {
 
+                /*
                 var userId = Guid.NewGuid();
                 var users = new List<AppUser>
                 {
@@ -23,7 +24,8 @@ namespace Persistence
                         Id = userId.ToString(),
                         DisplayName = "Admin",
                         UserName = "bob",
-                        Email = "bob@test.com"
+                        Email = "bob@test.com",
+                        Rank = AppUserRank.Admin
                     },
                 };
 
@@ -31,6 +33,8 @@ namespace Persistence
                 {
                     await userManager.CreateAsync(user, "Pa$$$w0rd");
                 }
+
+                */
                 /*
                 var fSObject = new FSObject
                 {

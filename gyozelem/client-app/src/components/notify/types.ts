@@ -1,8 +1,10 @@
-export interface IMessage {
-    closeClass: string;
-    message: string;
-    onTransitionEnd: (event: TransitionEvent) => void;
-    type: string; 
-}
+export declare namespace INotify {
+    interface Message {
+        closeClass: string;
+        message: string;
+        onTransitionEnd: (event: TransitionEvent) => void;
+        type: string; 
+    }
 
-export type IAvaliableNotifyTypes = 'success' | 'error' | 'warning' | 'normal';
+    type Types = 'success' | 'error' | 'warning' | 'normal';
+}

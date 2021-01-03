@@ -56,7 +56,10 @@ namespace Application.FSObjects
 
                 var chunks = fileChunks.Select(fileChunk => fileChunk.Chunk).ToArray();
                 var wholeBlob = new byte[chunks.Sum(a => a.Length)];
-                fs.Url = "/assets/" + fs.Name;
+                
+                fs.Url = "/assets/" + fs.Id.ToString() + '_' + fs.Name;
+                fs.Status = FSStatus.Ok;
+
                 var offset = 0;
                 
                 foreach (byte[] chunk in chunks) {

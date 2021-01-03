@@ -12,27 +12,51 @@ namespace Domain
     }
 
     public enum FSStatus { 
-        None, 
-        Error,
-        Uploading,
-        Processing,
-        Ok
+        None        = 0, 
+        Error       = 1,
+        Uploading   = 2,
+        Processing  = 3,
+        Ok          = 4
     }
 
     public enum FSType {
-        UNKNOWN,
-        FOLDER,
-        IMAGE,
-        VIDEO,
-        AUDIO,
-        DOCUMENT
+        UNKNOWN    = 0,
+        FOLDER     = 1,
+        IMAGE      = 2,
+        VIDEO      = 3,
+        AUDIO      = 4,
+        DOCUMENT   = 5,
+        ARCHIVE    = 6,
+        FONT       = 7,
     }
 
     public class FSMetaData
     {
+        #nullable enable
         public string? Extension { get; set; }
         public string? Filename { get; set; }
+        public string? MimeType { get; set; }
+        #nullable disable
     }
+
+    public static class FSObjectConfig {
+        public const string BaseFolderName = "wwwroot";
+        public const string AssetFolderName = "assets";
+        public static string GetWholePath(string filename = null)
+        {
+            var path = FSObjectConfig.BaseFolderName + "/" + FSObjectConfig.AssetFolderName + "/";
+            if (filename == null) {
+                return path;
+            }
+
+            return path + filename;
+        }
+        public static string GetRelativePath(string filename)
+        {
+            return FSObjectConfig.AssetFolderName + "/" + filename;
+        }
+    }
+
 
     public class FSObject
     {

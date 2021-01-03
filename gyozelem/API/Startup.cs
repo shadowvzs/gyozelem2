@@ -1,12 +1,14 @@
 using Application.Interfaces;
 using Application.FSObjects;
-using API.Middleware;
-using API.Formatters;
-// using API.SignalR;
-using Domain;
-using MediatR;
 using Infrastructure.Security;
 using Persistence;
+using WebSocket;
+using API.Middleware;
+using API.Formatters;
+using Domain;
+
+using MediatR;
+using AutoMapper;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
@@ -14,8 +16,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Authorization;
-using AutoMapper;
-
 using System;
 using System.Transactions;
 using System.Text;
@@ -27,6 +27,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.SignalR;
 
 namespace API
 {
@@ -81,12 +82,13 @@ namespace API
             services.AddMediatR(typeof(List.Handler).Assembly);
             services.AddAutoMapper(typeof(List.Handler));
             services.AddSignalR();
-            services.AddControllers(opt =>
-            {
-                var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
-                opt.Filters.Add(new AuthorizeFilter(policy));
-                opt.InputFormatters.Insert(0, new BinaryInputFormatter());
-            });
+            services
+                .AddControllers(opt =>
+                {
+                    var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+                    opt.Filters.Add(new AuthorizeFilter(policy));
+                    opt.InputFormatters.Insert(0, new BinaryInputFormatter());
+                });
                 // .AddFluentValidation(cfg => 
                 // {
                 //     cfg.RegisterValidatorsFromAssemblyContaining<Create>();
@@ -139,6 +141,7 @@ namespace API
 
             services.AddScoped<IJwtGenerator, JwtGenerator>();
             services.AddScoped<IUserAccessor, UserAccessor>();
+            services.AddSingleton<EntityEventHandlerHub>();
             // services.AddScoped<IPhotoAccessor, PhotoAccessor>();
             // services.AddScoped<IProfileReader, ProfileReader>();
         }
@@ -182,7 +185,7 @@ namespace API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                // endpoints.MapHub<ChatHub>("/chat");
+                endpoints.MapHub<EntityEventHandlerHub>("/signalr");
                 endpoints.MapFallbackToController("Index", "Fallback");
             });
             

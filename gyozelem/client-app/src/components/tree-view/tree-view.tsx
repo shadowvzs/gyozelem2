@@ -1,10 +1,7 @@
 
 import { Component, Prop, Host, h } from '@stencil/core';
 import { ITreeView } from './types';
-import externalDependencies from "./dependencies";
-import { IArrayValueMap, ITreeObject, TreeKey } from "../../core/util/core";
-
-const { array2TreeMap, getPath } = externalDependencies;
+import { ITreeObject, TreeKey, array2Hierarchy, IHierarchyMap } from "../../util/core";
 
 @Component({
     tag: 'tree-view',
@@ -17,28 +14,28 @@ export class TreeView<T = any> {
     @Prop()
     config: ITreeView.Config;
 
-    public treeMap: IArrayValueMap<ITreeObject<T>>;
+    public treeMap: IHierarchyMap<ITreeObject<T>>;
 
     private treeRender = (childs: ITreeObject<T>[], path: TreeKey[]) => {
 
         const {
             renderItem,
-            onSelect
+            onSelect,
+            isEnabled
         } = this.config;
         
         if (!childs || !childs.length) { return undefined; }
-        const activeId = path.pop();
 
         return (
             <ul>
                 {childs.map(child => {
-
-                    const isActive = activeId === child.id;
+                    const isActive = path.includes(child.id);
                     const hasChilds = child && child.childs && child.childs.length > 0;
-
+                    const enabled = !isEnabled || isEnabled(child);
+                    const cb = enabled ? () => onSelect(isActive ? child.parent.id : child.id) : undefined;
                     return (
                         <li> 
-                            <span onClick={() => onSelect(isActive ? child.parent.id : child.id)} style={{ display: 'flex' }}>
+                            <span class={isActive ? 'underline' : ''} onClick={cb} style={{ display: 'flex', opacity: enabled ? '1' : '0.5' }}>
                                 {hasChilds ? <span class={'arrow ' + (isActive ? 'down' : 'right')} /> : <span class='arrow spacer' />}
                                 { renderItem(child.item, isActive) }
                             </span>
@@ -51,16 +48,14 @@ export class TreeView<T = any> {
     };
     
     render() {
-
         const { activeId, rootId, getId, getParentId, getRootItem, list } = this.config;
-        console.log(list, getRootItem())
-        const treeMap = array2TreeMap(list, getId, getParentId, getRootItem());
-
+        const treeMap = array2Hierarchy(list, getId, getParentId, getRootItem());
+        const path = [...treeMap.getParentIds(activeId, rootId), activeId];
         return (
             <Host>
                 {treeMap && this.treeRender(
                     treeMap.valueMap[rootId].childs, 
-                    getPath(treeMap, activeId, rootId)
+                    path
                 )}
             </Host>
         );

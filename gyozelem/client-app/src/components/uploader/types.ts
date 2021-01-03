@@ -1,4 +1,4 @@
-import FSObject from "../file-explorer/model/FSObject";
+import FSObject from "../../model/FSObject";
 
 export declare namespace IUploader {
 

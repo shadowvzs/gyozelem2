@@ -1,11 +1,9 @@
-import Draggable from "../../core/util/draggable";
-
 const setScrollBar = (container: HTMLDivElement): void => {
     const content: HTMLElement = container.querySelector(".content") as HTMLDivElement;
     const scrollBar: HTMLInputElement = container.querySelector("input[type=range]") as HTMLInputElement;
 
     if (!container || !content || !scrollBar) {
-        return console.log('missing one or more dom element (ex. container[div], .content[div], .scrollBar[input=type[range]])');
+        return console.error('missing one or more dom element (ex. container[div], .content[div], .scrollBar[input=type[range]])');
     }
 
     const scrollHeight = content.scrollHeight;
@@ -46,7 +44,6 @@ const setScrollBar = (container: HTMLDivElement): void => {
 
 const externalDependencies = {
     setScrollBar,
-    Draggable
 };
 
 export default externalDependencies;

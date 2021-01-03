@@ -1,4 +1,12 @@
+import FSObject from "../../model/FSObject";
+
 export declare namespace IAudioPlayer {
+
+    interface Config {
+        autoplay?: boolean;
+        list?: FSObject[];
+    }
+
     interface Source {
         title: string;
         type: 'URL' | 'BLOB';
@@ -21,6 +29,5 @@ export declare namespace IAudioPlayer {
         status: 'PAUSE' | 'PLAY' | 'STOP';
         menu: boolean;
         list: any[];
-        timerId: number;
     }
 }

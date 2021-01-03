@@ -1,4 +1,5 @@
 import { Component, State, Element, Host, h } from '@stencil/core';
+import { broadcast } from '../../global/Broadcast';
 import { IContextMenu } from './types';
 
 @Component({
@@ -9,19 +10,30 @@ import { IContextMenu } from './types';
 
 export class ContextMenu {
 
+    private contextMenuSubscription = broadcast.on('contextMenu:open', (config: IContextMenu.Config<unknown>) => {
+        config.event.stopPropagation();
+        config.event.preventDefault();
+        const menuElem = this.createMenu(config);
+        if (!menuElem) { return; }
+        this.$activeMenu = this.setMenuPosition(menuElem, config);
+    });
+
     @Element()
     private $elem: HTMLElement;
 
     @State()
     $activeMenu: HTMLElement | null = null;
 
+    constructor() {
+        this.createMenu = this.createMenu.bind(this);
+    }
+
     componentWillLoad() {
-        document.addEventListener('contextMenu', this.contextMenuHandler);
         document.addEventListener('click', this.globalClickHandler);
     }
 
     disconnectedCallback() {
-        document.removeEventListener('contextMenu', this.contextMenuHandler);
+        this.contextMenuSubscription.unsubscribe();
         document.removeEventListener('click', this.globalClickHandler);
     }
 
@@ -32,36 +44,55 @@ export class ContextMenu {
     }
 
     private onClose = () => {
-        console.log('close context menu');
+        this.$activeMenu.remove();
         this.$activeMenu = null;
     }
 
-    private contextMenuHandler = (e: IContextMenu.ContextMenuEvent<any>) => {
-        e.preventDefault();
-        e.stopPropagation();
-        this.$activeMenu = this.setMenuPosition(this.createMenu(e.detail.menu), e.detail);
-    }
-
-    private createMenu = (menu: IContextMenu.Menu<any>[]): HTMLDivElement => {
+    private createMenu<T>({ menu, item, data, event }: IContextMenu.Config<T>): HTMLDivElement | void {
         const div = document.createElement('div');
         const ul = document.createElement('ul');
         div.oncontextmenu = (ev: MouseEvent) => ev.preventDefault();
         div.appendChild(ul);
-        menu.forEach(({ label, data, callback }) => {
-            console.log(label)
-            const li = document.createElement('li');
-            li.textContent = label;
-            li.onclick = (ev: MouseEvent) => callback(data, ev);
-            ul.appendChild(li);
-        });
+        const menuList = Object.values(menu)
+            .filter(m => m && (m.visible === undefined || typeof m.visible === 'function' ? m.visible(item) : m.visible));
+            
+        if (menuList.length === 0) { return console.warn('no context menu options'); }
+
+        menuList.forEach(({ action, enable, icon, label }) => {
+                const disabled = enable !== undefined && (typeof enable === 'function' ? !enable(item) : !enable);
+                const li = document.createElement('li');
+                li.style.cssText = `display: flex;align-items: center;`;
+                if (disabled) {
+                    li.classList.add('disabled');
+                } else {
+                    li.onclick = () => {
+                        this.onClose();
+                        action(event, item, data);
+                    }
+                }
+                const iconName = typeof icon === 'function' ? icon(item) : icon;
+                const liLabel = typeof label === 'function' ? label(item) : label;
+                if (iconName) {
+                    li.innerHTML = `<fs-icon
+                        singlelinelabel="true"
+                        name="${iconName}"
+                        color="active"
+                        label="${liLabel}"
+                        size='small'
+                    />`;
+                } else {
+                    li.textContent = liLabel;
+                }
+                ul.appendChild(li);
+            });
         return div;
     }
 
-    private setMenuPosition = (elem: HTMLDivElement, detail: IContextMenu.EventDetail<any>) => {
+    private setMenuPosition = (elem: HTMLDivElement, { event }: IContextMenu.Config<unknown>) => {
+        const { x, y } = event;
         // const rect = element.getBoundingClientRect();
-        // console.log(rect.top, rect.right, rect.bottom, rect.left);
-        elem.style.left = detail.x + 'px';
-        elem.style.top = detail.y + 'px';
+        elem.style.left = x + 'px';
+        elem.style.top = y + 'px';
         elem.classList.add('menu-container');
         return elem;
     }

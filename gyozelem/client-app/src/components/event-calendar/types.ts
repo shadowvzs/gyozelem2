@@ -1,3 +1,5 @@
+import { DateEx } from "../../model/DateEx";
+
 export declare namespace ICalendar {
 
     interface Event {
@@ -29,16 +31,16 @@ export declare namespace ICalendar {
 
     interface DateMap {
         className: string;
-        date: any[];
-        filter: any[];
+        date: string;
+        filter: [number | number[], number?, number?];
         text: string | number;
     }
 
     interface DateData {
         dateMap: DateMap[][];
         today: DateInfo;
-        minDate: Date;
-        maxDate: Date;
+        minDate: DateEx;
+        maxDate: DateEx;
     }
 
     interface DateInfo {

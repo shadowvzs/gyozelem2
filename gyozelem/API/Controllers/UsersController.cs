@@ -1,8 +1,9 @@
 using Application.User;
 using Domain;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-
+using MediatR;
 using System.Threading.Tasks;
 
 namespace API.Controllers
@@ -27,6 +28,13 @@ namespace API.Controllers
         public async Task<ActionResult<User>> CurrentUser()
         {
             return await Mediator.Send(new CurrentUser.Query());
-        }        
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<Unit>> SetRank(Rank.Command command)
+        {
+            return await Mediator.Send(command);
+        }
+
     }
 }

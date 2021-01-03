@@ -2,24 +2,25 @@
     --- style ---
 */
 
-:host {
+.slider-container {
     position: relative;
     overflow: hidden;
     background-color: white;
     max-width: 100%;
     display: block;
     height: 100%;
+    
 }
 
-:host .slider-body {
+.slider .slider-body {
     position: absolute;
     width: 100%;
     height: 100%;
     background-color: #000;
 }
 
-:host .slider-body > img,
-:host .slider-body > div:not(.counter) {
+.slider .slider-body > img,
+.slider .slider-body > div:not(.counter) {
     max-width: 100%;
     max-height: 100%;
     left: 50%;
@@ -27,11 +28,11 @@
     transform: translate(-50%, -50%);
 }
 
-:host .slider-body > img {
+.slider .slider-body > img {
     position: absolute;
 }
 
-:host .arrow {
+.slider .arrow {
     position: absolute;
     top: 50%;
     color: #fff;
@@ -48,19 +49,19 @@
     user-select: none;
 }
 
-:host .arrow:hover {
+.slider .arrow:hover {
     opacity: 0.8;
 }
 
-:host .arrow.left {
+.slider .arrow.left {
     left: 0;
 }
 
-:host .arrow.right {
+.slider .arrow.right {
     right: 0;
 }
 
-:host .counter {
+.slider .counter {
     background-color: rgba(0,0,0,0.8);
     bottom: 0;
     padding: 8px 16px;

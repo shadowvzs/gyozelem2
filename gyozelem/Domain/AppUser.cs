@@ -3,14 +3,17 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Domain
 {
+
+    public enum AppUserRank { 
+        None        = 0, 
+        Member      = 1,
+        Editor      = 2,
+        Admin       = 3,
+    }
+
     public class AppUser : IdentityUser
     {
         public string DisplayName { get; set; }
-
-        // public string Bio { get; set; }
-        // public virtual ICollection<UserActivity> UserActivities { get; set; }
-        // public virtual ICollection<Photo> Photos { get; set; }
-        // public virtual ICollection<UserFollowing> Followings { get; set; }
-        // public virtual ICollection<UserFollowing> Followers { get; set; }
+        public AppUserRank Rank { get; set; }
     }
 }

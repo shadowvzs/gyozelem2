@@ -1,0 +1,311 @@
+.date-time-picker {
+    position: absolute;
+    width: 320px;
+    margin: 3px 0;
+    height: auto;
+    text-align: center;
+    border-radius: 2px;
+    font-family: arial;
+    font-size: 16px;
+    box-shadow: 10px 10px 10px rgba(0,0,0,0.5);
+    border: 1px solid rgba(0,0,0,0.55);
+    display: flex;
+    flex-direction: row;
+    white-space: nowrap;
+}
+
+.date-time-picker > div {
+    flex: 1;
+}
+
+.date-time-picker .dtp-sidebar {
+    flex: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 4px;
+    border-right: 1px solid rgba(0,0,0,0.15);
+    background: linear-gradient(#192f30, #648880);
+}
+
+.date-time-picker .dtp-sidebar .tab {
+    padding: 8px 0;
+    cursor: pointer;
+}
+
+.date-time-picker .dtp-sidebar .tab svg {
+    color: rgba(255,255,255,0.25);
+}
+
+.date-time-picker .dtp-sidebar .tab.active svg {
+    color: rgba(255,255,255,0.75);
+}
+
+.date-time-picker * {
+    box-sizing: border-box;
+}
+
+.date-time-picker .dtp-head {
+    position: relative;
+    display: block;
+    width: 100%;
+}
+
+.date-time-picker .dtp-head .dtp-title {
+    cursor: pointer;
+    padding: 0 10px;
+}
+
+.date-time-picker .dtp-head .dtp-main-row {
+    background: linear-gradient(#293f50, #192f30);
+    color: #fff;
+    padding: 3px 0;
+    user-select: none;
+    display: flex;
+    justify-content: center;
+    height: 26px;
+}
+
+.date-time-picker .dtp-head .dtp-main-row > p {
+    margin: 0;
+}
+
+.date-time-picker .dtp-head .dtp-main-row > a {
+    position: relative;
+    top: -1px;
+    display: inline-block;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: radial-gradient(#648880, #293f50);
+    width: 50px;
+    border-radius: 3px;
+    cursor: pointer;
+    color: inherit;
+}
+
+.date-time-picker .dtp-head .dtp-main-row > a:hover { background: radial-gradient(#749890, #394f60); }
+
+.date-time-picker .dtp-row {
+    display: table-row;
+}
+
+.date-time-picker .dtp-row .dtp-cell {
+    display: table-cell;
+    vertical-align: middle;
+    transition: 0.5s;
+    width: 33.33%;
+    height: 40px;
+    font-size: 12px;
+}
+
+.date-time-picker .dtp-row .dtp-cell.invalid { 
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.date-time-picker [data-dtp-view="day"] .dtp-row .dtp-cell {
+    width: 14.28%;
+    height: 30px;
+}
+
+.date-time-picker [data-dtp-view="day"] .dtp-subhead {
+    display: table;
+    width: 100%;
+    color: rgba(255,255,255,0.7);
+    background: linear-gradient(#293f50, #192f30);
+}
+
+.date-time-picker [data-dtp-view="day"] .dtp-subhead.dtp-head .dtp-main-row {
+    background: linear-gradient(#192f30, #101f20);
+}
+
+.date-time-picker .dtp-right-side {
+    position: absolute;
+    display: block;
+    right: 3px;
+    top: 2px;
+}
+
+.date-time-picker .dtp-right-side .dtp-close {
+    font-family: Open Sans, serif;
+    font-size: 24px;
+    display: block;
+    border-radius: 4px;
+    background-color: rgb(255,0,0);
+    opacity: 0.5;
+    line-height: 20px;
+    width: 20px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.date-time-picker .dtp-left-side {
+    position: absolute;
+    display: block;
+    left: 3px;
+    top: 2px;
+    line-height: 20px;
+    font-size: 25px
+}
+
+.date-time-picker .dtp-left-side a {
+    height: 22px;
+    border-radius: 2px;
+    opacity: 0.75;
+    display: inline-block
+}
+
+.date-time-picker .dtp-right-side .dtp-close:hover,
+.date-time-picker .dtp-left-side a:hover { 
+    opacity: 1;
+} 
+
+.date-time-picker .dtp-left-side .dtp-add {
+    width: 20px;
+    height: 20px;
+    background-color: rgb(250, 150, 150);
+    margin: 1px 2px;
+    cursor: pointer;
+}
+
+.date-time-picker .dtp-left-side .dtp-back {
+    cursor: pointer;
+    width: 26px;
+    background-color: rgb(130, 90, 120);
+}
+
+
+.date-time-picker .dtp-body {
+    display: table;
+    width: 100%;
+    min-height: 200px;
+    color: #fff;
+    background: linear-gradient(#293f50, #648880);
+}
+
+.date-time-picker .dtp-body .dtp-list {
+    min-height: 150px;
+    padding: 20px;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.date-time-picker .dtp-body .dtp-row .dtp-cell {
+    position: relative;
+    cursor: pointer;
+}
+
+.date-time-picker .dtp-body .dtp-row .dtp-cell:hover { background-color: #ccf; }
+.date-time-picker .dtp-body .dtp-row .dtp-cell:disabled { cursor: not-allowed; }
+.date-time-picker .dtp-body .dtp-row .dtp-cell.inactive { opacity: 0.3; }
+.date-time-picker .dtp-body .dtp-row .dtp-cell.today { background-color: rgba(200,200,200,0.25); }
+.date-time-picker .dtp-body .dtp-row .dtp-cell.selected { background-color: rgba(100,100,200,0.5); }
+
+.date-time-picker .dtp-body .dtp-bubble {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 20px;
+    padding: 10px;
+    margin: 15px;
+    margin-bottom: 25px;
+    width: 100%;
+}
+
+.date-time-picker .dtp-body .dtp-bubble h3 {
+    font-size: 16px;
+    display: block;
+}
+
+.date-time-picker .dtp-body .dtp-bubble p {
+    margin-top: 10px;
+    font-size: 14px;
+    display: block;
+}
+
+.date-time-picker .dtp-body .dtp-bubble time {
+    text-align: right;
+    font-size: 10px;
+    display: block;
+}
+
+.date-time-picker .dtp-footer {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #749890;
+    padding: 4px;
+    border-top: 1px solid rgba(0,0,0,0.25);
+}
+
+.date-time-picker .dtp-footer > div {
+    padding: 2px 6px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 8px;
+    color: #fff;
+    font-family: arial;
+    border: 1px solid rgba(0,0,0,0.2);
+    font-size: 16px;
+}
+
+.date-time-picker .dtp-footer .dtp-button {
+    position: relative;
+    padding: 1px 4px;
+    display: flex;
+    margin: 0 2px;
+    border-radius: 3px;
+    color: inherit;
+    background: linear-gradient(to top, rgb(207, 207, 207) 16%, rgb(252, 252, 252) 79%);
+    border: 1px solid #000;
+    font-size: 14px;
+    line-height: 1.4em;
+    cursor: pointer;
+}
+
+.date-time-picker .dtp-footer .dtp-button:active {
+    top: 1px;
+    left: 1px;
+    background: linear-gradient(to top, rgb(252, 252, 252) 16%, rgb(207, 207, 207) 79%);
+}
+
+.date-time-picker .tp-body {
+    position: relative;
+}
+
+.date-time-picker .tp-body .tp-head {
+    position: absolute;
+    right: 4px;
+    top: 4px;
+}
+
+.date-time-picker .tp-body .tp-clock {
+    background: linear-gradient(#293f50, #648880); 
+    padding: 8px;
+}
+
+.date-time-picker .tp-body .tp-clock .hour-hand {
+    stroke: red; 
+    stroke-width: 2; 
+    fill: red;
+}
+
+.date-time-picker .tp-body .tp-clock .minute-hand {
+    stroke: blue;
+    stroke-width: 1;
+    fill: blue;
+}
+
+.date-time-picker .tp-body .tp-clock .clickable {
+    cursor: pointer;
+    pointer-events: fill;
+}
+
+.date-time-picker .tp-body .tp-clock .hour {
+    fill-opacity: 1;
+    fill: rgba(0,0,0,1);
+}
+
+.date-time-picker .tp-body .tp-clock .minute {
+    fill-opacity: 0.5;
+    fill: rgba(0,0,0,0.5);
+}

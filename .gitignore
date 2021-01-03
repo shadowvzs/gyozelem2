@@ -10,4 +10,5 @@ appsettings.json
 *.db
 **/wwwroot/*
 **/build/*
+**/API/core
 publish

@@ -18,7 +18,8 @@ namespace Application.User
 {
     public class Register
     {
- public class Command : IRequest<User>
+        
+        public class Command : IRequest<User>
         {
             public string DisplayName { get; set; }
             public string Username { get; set; }
@@ -53,32 +54,48 @@ namespace Application.User
             public async Task<User> Handle(Command request, CancellationToken cancellationToken)
             {
 
-                if (await _context.Users.Where(x => x.Email == request.Email).AnyAsync())
-                    throw new RestException(HttpStatusCode.BadRequest, new { Email = "Email already exists!" });
-                
-                if (await _context.Users.Where(x => x.UserName == request.Username).AnyAsync())
-                    throw new RestException(HttpStatusCode.BadRequest, new { Username = "Email already exists!" });
+                var countVal = _context.Users.Count();
+                var rank = AppUserRank.None;
+
+                if (countVal == 0)
+                {
+                    rank = AppUserRank.Admin;
+                } 
+                else 
+                {
+                    if (await _context.Users.Where(x => x.Email == request.Email).AnyAsync())
+                        throw new RestException(HttpStatusCode.BadRequest, new { Email = "Email already exists!" });
+                    
+                    if (await _context.Users.Where(x => x.UserName == request.Username).AnyAsync())
+                        throw new RestException(HttpStatusCode.BadRequest, new { Username = "Username already exists!" });
+                }
                 
                 var user = new AppUser
                 {
                     DisplayName = request.DisplayName,
                     Email = request.Email,
-                    UserName = request.Username
+                    UserName = request.Username,
+                    Rank = rank
                 };
 
-                var result = await _userManager.CreateAsync(user, request.Password);
-
-                if (result.Succeeded)
-                {
-                    return new User
+                try {
+                    var result = await _userManager.CreateAsync(user, request.Password);
+                    if (result.Succeeded)
                     {
-                        DisplayName = user.DisplayName,
-                        Token = _jwtGenerator.CreateToken(user),
-                        Username = user.UserName
-                    };
+                        return new User
+                        {
+                            DisplayName = user.DisplayName,
+                            Token = _jwtGenerator.CreateToken(user),
+                            Username = user.UserName,
+                            Rank = user.Rank
+                        };
+                    }
+                } catch (Exception e) {
+                    Console.WriteLine("User creation error: ", e);
+                    throw new RestException(HttpStatusCode.NotFound, new { User = "Problem creating user" });
                 }
 
-                throw new RestException(HttpStatusCode.NotFound, new { Activity = "Problem creating user" });
+                throw new RestException(HttpStatusCode.NotFound, new { User = "Problem creating user" });
             }
         }
     }

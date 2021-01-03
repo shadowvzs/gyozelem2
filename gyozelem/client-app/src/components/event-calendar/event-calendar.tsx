@@ -1,323 +1,49 @@
-import { Component, State, Prop, Host, h } from '@stencil/core';
+import { Component, State, Element, Prop, h } from '@stencil/core';
 import { ICalendar } from "./types";
-import { CalendarEvent } from "./CalendarEvent";
 import externalDependencies from "./dependencies";
+import { CalendarEventController } from './controller';
+import { translation } from '../../global/translation';
+import { iconList } from '../../icons/icons';
+import { DateEx } from '../../model/DateEx';
+import { globalStore } from '../../global/stores';
+import { UserRank } from '../../model/User';
 
 const {
     capitalize, 
-    getDeepProp, 
     getMonthInfo, 
-    toDate, 
-    setDate, 
-    deltaDate, 
-    getDate, 
-    toMysqlDate, 
+    deltaDate,  
     setTime, 
     betweenDate, 
-    to2digit,
-    Draggable
 } = externalDependencies;
-
-const defaultConfig: ICalendar.Config = {
-    title: 'Calendar',
-    list: [],
-    date: toMysqlDate(new Date()),
-    viewMode: 'day',
-    language: 'en',
-    minDate: '2000-01-01 04:00:00',
-    maxDate: '2114-11-02 06:00:00',     // difference should be 120 year
-}
-
-const translation = {
-    'en': {
-        dayShort: ['Mon', 'Tue', 'Wed', 'Tue', 'Fri', 'Sat', 'Sun'],
-        day: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-        month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-    },
-    'hu': {
-        dayShort: ['Htf', 'Kdd', 'Sze', 'Csü', 'Pén', 'Szo', 'Vas'],
-        day: ['Hétfő', 'Kedd', 'Szerda', 'Csütörtök', 'Péntek', 'Szombat', 'Vasárnap'],
-        month: ['Január', 'Február', 'Március', 'Április', 'Május', 'Június', 'Július', 'Augusztus', 'Szeptember', 'Október', 'November', 'December']
-    }
-}
-
-const availableViewModes: ICalendar.ViewMode[] = ['form', 'event', 'day', 'month', 'year', 'yearStack'];
 
 @Component({
     tag: 'event-calendar',
     styleUrl: 'event-calendar.css',
-    shadow: true
+    shadow: false
 })
 
-
 export class EventCalendar {
-    private $elem: HTMLDivElement;
-    private list: Record<string, any> = {};
-    private selectedEvent: ICalendar.Event;
 
-    private MAX_ROW = 6;
-    private MAX_COL = 7;
-    private NAVIGABLE_VIEWS = ['year', 'month', 'day'];
-    private config: ICalendar.Config = defaultConfig;             // config for calendar
-
-    @State() state: ICalendar.State = {
-        viewMode: 'day',                  // play another audio if current is ended
-    }
-
-    // cannot add custom type to promise :/
-    // @Prop() onSave: (data: ICalendar.Event) => Promise<ICalendar.Event>;
-    @Prop() onSave: (data: ICalendar.Event) => Promise<any>;
-    @Prop() onDelete: (data: ICalendar.Event) => Promise<void>;
-    @Prop() draggable: boolean;
+    @Element() el: HTMLDivElement;    
     @Prop() onMinimize: () => {};
+    @State() state: object = {};
 
-    componentDidLoad() {
-        // Optional: we can make the window draggable :)
-        if (this.draggable && this.$elem && Draggable) {
-            new Draggable(this.$elem, this.$elem.querySelector('.ec-head'));
-        }
+    private controller: CalendarEventController;
+
+    componentWillLoad() {
+        this.controller = new CalendarEventController(this.el)
+        this.controller.forceUpdate = () => this.state = {};
+        // some init if needed
     }
 
-    private setState = (state: Partial<ICalendar.State>) => {
-        this.state = {...this.state, ...state };
-    }
-
-    private forceUpdate() {
-        this.setState({...this.state});
-    }
-
-    protected reset = (): void => {
-        this.config = defaultConfig;
-        this.setState({ viewMode: defaultConfig.viewMode });
-    }
-
-    protected onNext = (): void => {
-        this.moveCalendar(1);
-    }
-
-    protected onPrev = (): void => {
-        this.moveCalendar(-1);
-    }
-
-    protected moveCalendar = (modifier = 1): void => {
-        const { viewMode } = this.state;
-        const idx = this.NAVIGABLE_VIEWS.indexOf(viewMode);
-        const parentView = this.NAVIGABLE_VIEWS[idx > 0 ? idx - 1 : 0];
-        const amount = viewMode === 'year' ? 12 : 1;
-        const {
-            date,
-            minDate,
-            maxDate
-        } = this.config;
-        const newDate = betweenDate([deltaDate(date, { [parentView]: amount * modifier }), minDate, maxDate]);
-        this.config.date = newDate.toISOString();
-        this.forceUpdate();
-    }
-
-    protected onIncreaseView = (): void => {
-        const { viewMode } = this.state;
-        const idx = availableViewModes.indexOf(viewMode);
-        if (~idx && idx < (availableViewModes.length - 1)) {
-            this.setState({ viewMode: availableViewModes[idx + 1] });
-        } else {
-            this.forceUpdate();
-        }
-	}
-
-    private onSelect = (e: MouseEvent): void => {
-        if (!e.target) return;
-        const data = (e.target as HTMLElement).dataset;
-        if (data.id) {
-            const id = +data.id;
-            let event: Pick<ICalendar.Event, 'title' | 'message'> | ICalendar.Event | undefined;
-            if (id === 0) {
-                const selectedDate = this.config.date;
-                event = {
-                    createdAt: selectedDate ? selectedDate.substr(0,11) + '16:00:00' : toMysqlDate(new Date()),
-                    message: '',
-                    title: ''
-                };
-            } else {
-                try {
-                    const [ year, month, day ] = this.config.date.split(' ')[0].split('-');
-                    event = (this.list[year][month][day].list as ICalendar.Event[]).find(x => +x.id === id);
-                } catch(err) {
-                    console.warn(err);
-                }
-                if (!event) return;
-            }
-            this.selectedEvent = event as ICalendar.Event;
-        } else if (data.date) {
-            this.config.date = data.date;
-        }
-        const idx = availableViewModes.indexOf(this.state.viewMode);
-        if (idx === 0) return console.warn('it is day view');
-        this.setState({ viewMode: availableViewModes[idx - 1] })
-    }
-
-    private onSaveHandler = async (data: ICalendar.Event): Promise<void> => {
-        if (typeof data.id === 'undefined') delete data.id;
-        try {
-            if (this.onSave) {
-                data = await this.onSave({ ...data });
-            }
-            this[data.id ? 'updateEvent' : 'addEvent'](data);
-            this.onIncreaseView();
-        } catch (err) {
-            console.error(err);
-            throw err;
-        }
-    }
-
-    protected onDeleteHandler = async (e: MouseEvent) => {
-        const id = (e.target as HTMLElement).dataset.id;
-        let event: ICalendar.Event;
-        try {
-            const keys = this.config.date.split(' ')[0];
-            if (!id) return;
-            const [ year, month, day ] = keys.split('-');
-            event = this.list[year][month][day].list.find(e => e.id === +id);
-        } catch (err) {
-            return console.error('Event not exist!', err);
-        }
-        try {
-            if (this.onDelete) {
-                await this.onDelete(event);
-            }
-            this.deleteEvent(event);
-            this.onIncreaseView();
-        } catch(err) {
-            console.error(err);
-            throw err;
-        }
-    }
-
-    public async initCalendar(config: Partial<ICalendar.Config>): Promise<void> {
-        if (!config) return;
-        const newConfig = Object.assign({}, defaultConfig as ICalendar.Config, config as Partial<ICalendar.Config>) as ICalendar.Config;
-        this.config = newConfig;
-        this.listToMap(newConfig.list);
-        const { date, minDate, maxDate } = newConfig;
-        this.config.date = toMysqlDate(betweenDate([date, minDate, maxDate]));
-        Object.assign(this.config, { minDate, maxDate });
-        this.setState({ 'viewMode': newConfig.viewMode as ICalendar.ViewMode })
-    }
-
-    protected getEventKey = (ev: ICalendar.Event): string[] => {
-        if (!ev.createdAt) return [];
-        return ev.createdAt.split(' ')[0].split('-');
-    }
-
-    protected updateEvent = (ev: ICalendar.Event): boolean => {
-        const [ year, month, day ] = this.getEventKey(ev);
-        try {
-            const list = this.list[year][month][day].list;
-            const idx = list.findIndex(e => +e.id === +ev.id);
-            if (~idx) {
-                ev.id = +ev.id;
-                list[idx] = ev;
-                return true;
-            }
-        } catch(e) {
-            // fail
-        }
-        return false;
-    }
-
-    protected deleteEvent = (ev: ICalendar.Event): boolean => {
-        const [ year, month, day ] = this.getEventKey(ev);
-        try {
-            const list = this.list[year][month][day].list;
-            const idx = list.findIndex(e => e.id === ev.id);
-            if (~idx) {
-                list.splice(idx, 1);
-                this.list[year].count--;
-                this.list[year][month].count--;
-                return true;
-            }
-        } catch(e) {
-            // fail
-        }
-        return false;
-    }
-
-    protected addEvent = (ev: ICalendar.Event) => {
-        const l = this.list;
-        if (!ev.createdAt) return;
-        const [ year, month, day ] = this.getEventKey(ev);
-        if (!l[year]) l[year] = { count: 0 };
-        if (!l[year][month]) l[year][month] = { count: 0 };
-        if (!l[year][month][day]) l[year][month][day] = {
-            list: [],
-            get count() { return this.list.length; }
-        };
-        l[year][month].count++;
-        l[year].count++;
-        l[year][month][day].list.push(ev);
-    }
-
-    public listToMap = (list: ICalendar.Event[]): Record<string, any> => {
-        this.list = {};
-        list.forEach(this.addEvent);
-        return list;
-    }
-
-    protected getEventCount = (keys: number[]): number => {
-        let target: Record<string, any> = this.list;
-        if (!keys) return 0;
-        if (keys.length === 1 && Array.isArray(keys[0])) {
-            const [ start, end ] = keys[0];
-            return Object.keys(target)
-                .filter(x => x >= start && x <= end)
-                .reduce((t, x) => t + target[x].count, 0);
-        }
-        for (const key of keys) {
-            target = target[to2digit(key)];
-            if (!target) return 0;
-        }
-        return target.count || 0;
-    }
-
-    protected getEvents = (dateTime?: string): ICalendar.Event[] => {
-        const {year, month, day} = getDate(dateTime);
-        return getDeepProp(this.list, `${year}.${to2digit(month)}.${to2digit(day)}.list`, []);
-    }
-
-    protected getDateDate = (): ICalendar.DateData => {
-        const { minDate, maxDate } = this.config;
-        return {
-            dateMap: [],
-            today: getDate(),
-            minDate: toDate(minDate),
-            maxDate: toDate(maxDate),
-        }
-    }
-
-    protected getStackRange = (dateTime?: string | Date): { start: number, end: number} => {
-        const date = toDate(dateTime || this.config.date);
-        const curYear = date.getFullYear();
-        const start = curYear - ((curYear - getDate(this.config.minDate).year) % 12);
-        return { start, end: start + 11 }
-    }
-
-    public getTitle = (dateInfo: ICalendar.DateInfo): string => {
-        const { viewMode } = this.state;
-        const locale = translation[this.config.language as string];
-        if (viewMode === 'day') {
-            return `${locale.month[dateInfo.month - 1]} ${dateInfo.year}`;
-        } else if (viewMode === 'month') {
-            return `${dateInfo.year}`;
-        } else if (viewMode === 'year') {
-            const { year, month, day } = getDate(this.config.date);
-            const { start, end } = this.getStackRange(new Date(year, month - 1, day));
-            return `${start} - ${end}`;
-        }
-        return this.config.title || '';
+    disconnectedCallback() {
+        this.controller.dispose();
+        console.info('removed the event calendar from dom');
     }
 
     protected renderYearStackView() {
 
-        const { dateMap, today, minDate, maxDate } = this.getDateDate();
+        const { dateMap, today, minDate, maxDate } = this.controller.getDateDate();
         const minYear = minDate.getFullYear();
         const maxYear = maxDate.getFullYear();
 
@@ -329,7 +55,7 @@ export class EventCalendar {
                 if (today.year >= year && today.year < (year + 12)) className.push('selected');
                 row.push({
                     className: className.join(' '),
-                    date: [year, '01', '01'],
+                    date: `${year}-01-01`,
                     filter: [[year, year + 11]],
                     text: `${year} - ${year + 11}`,
                 });
@@ -340,10 +66,17 @@ export class EventCalendar {
         return this.renderEventCells(dateMap);
     }
 
-    protected renderYearView(dateTime?: string) {
-        const { dateMap, today, minDate, maxDate } = this.getDateDate();
-        const { start } = this.getStackRange();
-        const curDate: Date = setDate(dateTime as string, 1, 1, start);
+    protected renderYearView(dateTime?: DateEx) {
+        const { getDateDate, getStackRange } = this.controller;
+        const { dateMap, today, minDate, maxDate } = getDateDate();
+        const { start } = getStackRange();
+        const curDate: DateEx = new DateEx(dateTime.getTime());
+        curDate.set({
+            year: start,
+            month: 1,
+            day: 1
+        });
+
         for (let r = 0; r < 4; r++) {
             const row: ICalendar.DateMap[] = [];
             for (let c = 0; c < 3; c++) {
@@ -353,7 +86,7 @@ export class EventCalendar {
                 if (+curDate < +minDate || +curDate > +maxDate) className.push('invalid');
                 row.push({
                     className: className.join(' '),
-                    date: [year, '01', '01'],
+                    date: `${year}-01-01`,
                     filter: [year],
                     text: year,
                 });
@@ -364,11 +97,17 @@ export class EventCalendar {
         return this.renderEventCells(dateMap);
     }
 
-    protected renderMonthView(dateTime?: string) {
-        const { year } = getDate(dateTime);
-        const { dateMap, today, minDate, maxDate } = this.getDateDate();
-        const locale = translation[this.config.language as string];
-        const curDate: Date = setDate(dateTime as string, 1, 1, year);
+    protected renderMonthView(dateTime?: DateEx) {
+        const { config, getDateDate } = this.controller;
+        const { year } = dateTime.getObjectForm();
+        const { dateMap, today, minDate, maxDate } = getDateDate();
+        const locale = translation[config.language as string];
+        const curDate: DateEx = new DateEx(dateTime.getTime());
+        curDate.set({
+            year: year,
+            month: 1,
+            day: 1
+        });
         for (let r = 0; r < 4; r++) {
             const row: ICalendar.DateMap[] = [];
             for (let c = 0; c < 3; c++) {
@@ -378,7 +117,7 @@ export class EventCalendar {
                 if (+curDate < +minDate || +curDate > +maxDate) className.push('invalid');
                 row.push({
                     className: className.join(' '),
-                    date: [year, ("" + month).padStart(2, '0'), '01'],
+                    date: `${year}-${("" + month).padStart(2, '0')}-01`,
                     filter: [year, month],
                     text: locale.month[month - 1],
                 } as ICalendar.DateMap);
@@ -389,25 +128,32 @@ export class EventCalendar {
         return this.renderEventCells(dateMap);
     }
 
-    protected renderDayView(dateTime?: string) {
-        const date = new Date(toMysqlDate(dateTime as string).substr(0, 8) + '01 23:59:59');
+    protected renderDayView(dateTime?: DateEx) {
+        const { getDateDate, MAX_ROW, MAX_COL } = this.controller;
+        const date = new DateEx(dateTime.getTime());
+        date.set({
+            day: 1,
+            hour: 23,
+            min: 59,
+            sec: 0
+        });
         const dateInfo = getMonthInfo(date);
-        const curDate: Date = date;
+        const curDate: DateEx = date;
         const fromPrevMonth = dateInfo.firstDay - 6;
-        const { dateMap, today, minDate, maxDate } = this.getDateDate();
+        const { dateMap, today, minDate, maxDate } = getDateDate();
         if (dateInfo.firstDay < 6) deltaDate(curDate, { day: fromPrevMonth });
-        const maxRow = Math.min(this.MAX_ROW, Math.ceil((dateInfo.monthLastDay - fromPrevMonth + 1) / this.MAX_COL));
+        const maxRow = Math.min(MAX_ROW, Math.ceil((dateInfo.monthLastDay - fromPrevMonth + 1) / MAX_COL));
         for (let r = 0; r < maxRow; r++) {
             const row: ICalendar.DateMap[] = [];
-            for (let c = 0; c < this.MAX_COL; c++) {
-                const { year, month, day} = getDate(curDate);
+            for (let c = 0; c < MAX_COL; c++) {
+                const { year, month, day} = curDate.getObjectForm();
                 const className: string[] = ['ec-cell'];
                 if (+curDate < +minDate || +curDate > +maxDate) className.push('invalid');
                 if (dateInfo.month !== month) className.push('inactive');
                 if (today.year === year && today.month === month && today.day === day) className.push('selected');
                 row.push({
                     className: className.join(' '),
-                    date: [year, month, day],
+                    date: `${year}-${("" + month).padStart(2, '0')}-${("" + day).padStart(2, '0')}`,
                     filter: [year, month, day],
                     text: curDate.getDate(),
                 });
@@ -418,16 +164,28 @@ export class EventCalendar {
         return this.renderEventCells(dateMap);
     }
   
-    protected renderEventView(dateTime?: string) {
-        const events = this.getEvents(dateTime);
+    protected renderEventView(dateTime?: DateEx) {
+        const { getEvents, onSelect, onDeleteHandler } = this.controller;
+        const events = getEvents(dateTime);
+
+        const EditIcon = iconList['Edit'];
+        const DeleteIcon = iconList['Delete'];
+        const user = globalStore.get('user');
+
         return (
-            <div>
+            <div class="ec-list-wrapper">
                 <div class="ec-list">
-                    { events.length ? events.map(({ createdAt, id, message, title }) => (
+                    { events.length ? events.map(({ startAt, id, message, title }) => (
                         <div class="ec-bubble">
-                            <h3 onClick={this.onSelect} data-id={id}>{title}</h3>
-                            <p onClick={this.onSelect} data-id={id}> {message} </p>
-                            <time>{createdAt}</time>
+                            {user && user.rank >= UserRank.Editor && (
+                                <div class="ec-actions">
+                                    <div class="clickable" data-id={id} onClick={onSelect}> <EditIcon /> </div>
+                                    <div class="clickable" data-id={id} onClick={onDeleteHandler}> <DeleteIcon /> </div>
+                                </div>
+                            )}
+                            <h3>{title}</h3>
+                            <p> {message} </p>
+                            <time>{startAt.toMySQLDate()}</time>
                         </div>
                     )) : <div> ...üres... </div>}
                 </div>
@@ -435,65 +193,51 @@ export class EventCalendar {
         );
     }
 
-    private extractFormData = (event: InputEvent) => {
-        const data = {};
-        const $form = event.target as HTMLFormElement;
-        const inputs = Array.from($form.querySelectorAll('input,textarea')) as HTMLInputElement[];
-        inputs.filter(x => x.name).forEach(x => {
-            data[x.name] = x.value;
-        });
-        event.preventDefault();
-        event.stopPropagation();
-        return data as ICalendar.Event;
-    }
-    
     protected renderFormView() {
         const {
-            createdAt,
-            id,
-            message,
-            title,
-        } = this.selectedEvent || {};
-        // const { hour, min } = getDate(createdAt);
-        
-        // const time = to2digit(hour || 1) + ':' + to2digit(min || 0);
-        const model = Object.assign(new CalendarEvent(), {
-            id,
-            message,
-            title,
-            createdAt
-        });
+            selectedEvent,
+            onSaveHandler,
+            onDeleteHandler,
+            onFormDateTimeChange,
+            onGuestSelect
+        } = this.controller;
 
-        // todo this part
-        console.log(model);
+        const CalendarIcon = iconList['Calendar'];
+        const CalendarGuestIcon = iconList['CalendarGuest'];
 
         return (
             <div>
-                <form class="ec-form" onSubmit={(event: InputEvent) => this.onSaveHandler(this.extractFormData(event))}>
+                <form-validator class="ec-form" model={this.controller.selectedEvent} submit={onSaveHandler} validate-at='SUBMIT'>
                     <input name="title" placeholder="Event title" /> 
-                    <textarea name="message" rows={5} placeholder="Szöveg"></textarea>
-                    <input name="createdAt" placeholder="yy:mm:dd hh:mm:ss" />
-                    <input type="submit" class='ec-submit' value={ id ? 'Update' : 'Save'} />
-                    { id && <a class="ec-button" onClick={this.onDeleteHandler} data-id={id}>Delete</a>}
-                </form>                
+                    <textarea name="message" rows={5} placeholder="Szöveg" />
+                    <div class="ec-date-area">
+                        <div> {selectedEvent.startAt.toMySQLDate()} </div>
+                        <div class="button-bar">
+                            <a class="ec-button" onClick={onGuestSelect}> 
+                                {selectedEvent.calendarGuests.length} <CalendarGuestIcon width="20" height="20" /> 
+                            </a>
+                            <a class="ec-button" onClick={onFormDateTimeChange}> 
+                                <CalendarIcon width="16" height="16" /> 
+                            </a>
+                        </div>
+                    </div>
+
+                    <input type="submit" class='ec-submit' value={ selectedEvent.id ? 'Update' : 'Save'} />
+                    { selectedEvent.id && <a class="ec-button" onClick={onDeleteHandler} data-id={selectedEvent.id} data-increase="true">Delete</a>}                    
+                </form-validator>
             </div>        
         );
     }
 
-    private onMinimizeHandler(): void {
-        if (this.onMinimize) { this.onMinimize(); }
-        this.reset()
-    }
-    
     private renderEventCells = (list: ICalendar.DateMap[][]) => {
         return list.map(week => (
             <div class="ec-row">
                 { week.map(x => (
                     <div
-                        data-date={x.date.map(y => y.length === 1 ? '0' + y : y).join('-')}
-                        data-counter={this.getEventCount(x.filter)}
+                        data-date={x.date}
+                        data-counter={this.controller.getEventCount(x.filter)}
                         class={x.className}
-                        onClick={this.onSelect}
+                        onClick={this.controller.onSelect}
                     >
                         {x.text}
                     </div>
@@ -503,38 +247,37 @@ export class EventCalendar {
     };
 
     public render() {
-
-        const {
-            viewMode
-        } = this.state;
-
-        const { date, minDate, maxDate } = this.config;
-        const fixedDate = setTime(betweenDate([date, minDate, maxDate]), 23, 59, 59);
-        this.config.date = toMysqlDate(fixedDate);
-        const dateInfo = getDate(fixedDate);
-        const title = this.config.getTitle 
-            ? this.config.getTitle(viewMode, dateInfo) 
-            : this.getTitle(dateInfo);
-        const locale = translation[this.config.language as string];
+        const { viewMode, NAVIGABLE_VIEWS, config, onPrev, onNext, onIncreaseView, onSelect, getTitle } = this.controller;
+        const { date, minDate, maxDate, language } = config;
+        const fixedDate = setTime(betweenDate([date, minDate, maxDate]), 23, 59, 0);
+        config.date = fixedDate.toMySQLDate();
+        const dateInfo = fixedDate.getObjectForm();
+        const title = config.getTitle 
+            ? config.getTitle(viewMode, dateInfo) 
+            : getTitle(dateInfo);
+        const locale = translation[language as string];
         const viewName = capitalize(viewMode);
         const renderMethod = `render${viewName}View`;
+        const user = globalStore.get('user');
 
         return (
-            <Host ref={(el: HTMLDivElement) => this.$elem = el}>
+            <div class='event-calendar'>
                 <div data-ec-view={viewMode}>
                     <div class="ec-head">
                         <div class="ec-main-row">
-                            { !!~this.NAVIGABLE_VIEWS.indexOf(viewMode) && <a onClick={this.onPrev}>‹</a> }
-                            <p class="ec-title" onClick={this.onIncreaseView}>{title}</p>
-                            { !!~this.NAVIGABLE_VIEWS.indexOf(viewMode) && <a onClick={this.onNext}>›</a> }
+                            { NAVIGABLE_VIEWS.includes(viewMode) && <a onClick={onPrev}>‹</a> }
+                            <p class="ec-title" onClick={onIncreaseView}>{title}</p>
+                            { NAVIGABLE_VIEWS.includes(viewMode) && <a onClick={onNext}>›</a> }
                             { viewMode!== 'yearStack' && (
                                 <div class="ec-left-side">
-                                    <a class='ec-back' onClick={this.onIncreaseView}>&laquo;</a>
-                                    { viewMode === 'event' && <a class="ec-add" onClick={this.onSelect} data-id="0">+</a> }
+                                    <a class='ec-back' onClick={onIncreaseView}>&laquo;</a>
+                                    { viewMode === 'event' && user && user.rank >= UserRank.Editor && (
+                                        <a class="ec-add" onClick={onSelect} data-id="0">+</a> 
+                                    )}
                                 </div>
                             )}
                             <div class="ec-right-side">
-                                { this.onMinimize && <a class="ec-close" onClick={this.onMinimizeHandler}>×</a>}
+                                <a class="ec-close close">×</a>
                             </div>
                         </div>
                     </div>
@@ -549,7 +292,7 @@ export class EventCalendar {
                         {this[renderMethod](fixedDate)}
                     </div>
                 </div>
-            </Host>
+            </div>
         );
     }
 }

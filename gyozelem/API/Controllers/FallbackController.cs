@@ -9,7 +9,12 @@ namespace API.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
-            return PhysicalFile(Path.Combine(Directory.GetCurrentDirectory(), "wwwwroot", "index.html"), "text/HTML");
+            var fileName = "index.html";
+            var filePath = "wwwwroot/" + fileName;
+            var fileExists = System.IO.File.Exists(filePath);
+            return PhysicalFile(filePath, "text/HTML", fileName);
+            //return PhysicalFile(Path.Combine("wwwwroot", "index.html"), "text/HTML");
+            // return PhysicalFile(Path.Combine(Directory.GetCurrentDirectory(), "wwwwroot", "index.html"), "text/HTML");
         }
     }
 }

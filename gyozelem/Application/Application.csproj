@@ -2,6 +2,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj"/>
     <ProjectReference Include="..\Persistence\Persistence.csproj"/>
+    <ProjectReference Include="..\Util\Util.csproj"/>
+    <ProjectReference Include="..\WebSocket\WebSocket.csproj"/>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.0"/>

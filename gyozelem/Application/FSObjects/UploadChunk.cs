@@ -39,7 +39,10 @@ namespace Application.FSObjects
                 var user = await _context.Users.SingleOrDefaultAsync(x => 
                     x.UserName == _userAccessor.GetCurrentUsername());
 
-                var createdBy = user != null ? new Guid(user.Id) : Guid.Empty;
+                if (user == null || (user.Rank != AppUserRank.Editor && user.Rank != AppUserRank.Admin))
+                {
+                    throw new RestException(HttpStatusCode.Unauthorized);
+                }
 
                 var fileChunk = new FileChunk
                 {
@@ -48,7 +51,7 @@ namespace Application.FSObjects
                     Index = Int32.Parse(request.Index),
                     Chunk = request.RawData,
                     CreatedAt = DateTime.Now,
-                    CreatedBy = createdBy
+                    CreatedBy = Guid.Parse(user.Id)
                 };
 
                 _context.FileChunks.Add(fileChunk);

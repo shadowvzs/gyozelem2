@@ -1,0 +1,60 @@
+.guest-manager {
+    padding: 8px;
+}
+
+.guest-manager main .guest-list {
+    max-height: 200px;
+    overflow: auto;
+}
+
+.guest-manager footer {
+    border-top: 1px solid rgba(0,0,0,0.25);
+    margin-top: 8px;
+    padding-top: 8px;
+}
+
+.guest-manager .new-guest-form .input-wrapper {
+    display: flex;
+}
+
+.guest-manager .new-guest-form .input-wrapper input:first-child {
+    margin-right: 8px;
+}
+
+.guest-manager .guest-item-wrapper {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap; 
+    color: rgba(0,0,0,0.75);
+}
+
+.guest-manager .guest-item-wrapper form {
+    width: 100%;
+}
+
+.guest-manager .guest-item-wrapper .guest-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+}
+
+.guest-manager .guest-item-wrapper input[type="checkbox"] {
+    margin-right: 4px;
+}
+
+.guest-manager .guest-item-wrapper .form-actions {
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.7s;;
+}
+
+.guest-manager .guest-item-wrapper:hover .form-actions {
+    visibility: visible;
+    opacity: 1;
+}
+
+.guest-manager .select-btn {
+    padding: 4px 8px;
+}

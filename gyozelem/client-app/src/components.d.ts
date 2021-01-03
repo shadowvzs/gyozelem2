@@ -7,52 +7,58 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { IAudioPlayer } from "./components/audio-player/types";
 import { IOption } from "./components/form-validator/autocomplete";
-import { ICalendar } from "./components/event-calendar/types";
-import { IFSObject } from "./components/file-explorer/model/FSObject";
-import { IBaseModel, IValidationError } from "./components/form-validator/types";
-import { IAvaliableNotifyTypes } from "./components/notify/types";
+import { IDateTimePicker } from "./components/date-time-picker/types";
+import { FolderSelectorProps, IFSObject } from "./model/FSObject";
+import { ErrorFormatter, IBaseModel, IValidationError } from "./components/form-validator/types";
+import { RouterHistory } from "@stencil/router";
 import { ISlider } from "./components/slider/types";
-import { JSX } from "@stencil/core";
 import { ITreeView } from "./components/tree-view/types";
-import { IUploader } from "./components/uploader/types";
 export namespace Components {
     interface AppRoot {
     }
     interface AudioPlayer {
-        "canDrag": boolean;
-        "list": {
-        title: string;
-        type: 'URL' | 'BLOB';
-        url: string;
-    }[];
+        "config": IAudioPlayer.Config;
     }
     interface AutoCompleteInput {
         "attrs": Record<string, any>;
         "onSelect": (value: string, label?: string) => void;
         "options": IOption[];
     }
+    interface BankInfo {
+    }
     interface ContextMenu {
     }
-    interface DetailView {
-        "item": any;
+    interface DateTimePicker {
+        "config": Partial<IDateTimePicker.Config>;
+        "onClose": () => void;
+        "pickerMode": IDateTimePicker.PickerMode;
     }
     interface EventCalendar {
-        "draggable": boolean;
-        "onDelete": (data: ICalendar.Event) => Promise<void>;
         "onMinimize": () => {};
-        "onSave": (data: ICalendar.Event) => Promise<any>;
+    }
+    interface FileDetail {
+        "item": any;
     }
     interface FileExplorer {
     }
-    interface FolderView {
+    interface FolderDetail {
         "item": IFSObject;
         "minimal": boolean;
         "onClose": () => void;
         "onSuccess": (item: IFSObject) => Promise<void>;
     }
+    interface FolderSelect {
+        "buttonName": FolderSelectorProps['buttonName'];
+        "initFolderId": FolderSelectorProps['initFolderId'];
+        "inputProps"?: FolderSelectorProps['inputProps'];
+        "onClose": FolderSelectorProps['onClose'];
+        "onSuccess": FolderSelectorProps['onSuccess'];
+    }
     interface FormValidator {
         "autoDisable": boolean;
-        "errorFormatter": (errors: IValidationError[]) => string;
+        "errorFormatter": ErrorFormatter;
+        "errorSeparator": string;
+        "fullWidth": boolean;
         "model": IBaseModel;
         "submit": (arg0: IBaseModel) => void;
         "validateAt": 'CHANGE' | 'SUBMIT';
@@ -60,35 +66,53 @@ export namespace Components {
     interface FsIcon {
         "align": 'bottom' | 'right';
         "clickHandler": (item: IFSObject) => void;
+        "color": 'default' | 'active' | 'warning' | 'error' | 'confirm';
         "editable": boolean;
         "fs": IFSObject;
         "height": string;
+        "isActive"?: boolean;
         "isSelected"?: (id: string) => boolean;
         "label": string;
         "name": string;
+        "onContextMenu": (event: MouseEvent, item?: IFSObject) => void;
         "onTitleChange": (newTitle: string, item?: IFSObject) => void;
         "selectHandler": (item: IFSObject) => void;
+        "singlelinelabel"?: boolean;
         "size": 'small' | 'normal' | 'big';
         "width": string;
     }
+    interface GuestManager {
+        "onClose": () => void;
+        "onSelect": (ids: string[]) => void;
+        "selectedIds": string[];
+    }
+    interface HomePage {
+    }
+    interface LayoutCmp {
+        "history": RouterHistory;
+    }
+    interface LoginPage {
+    }
     interface NotifyContainer {
-        "send": (type: IAvaliableNotifyTypes, message: string) => Promise<void>;
         "validation": Record<string, any>;
     }
     interface PanelManager {
     }
+    interface SermonInfo {
+    }
+    interface SignupPage {
+    }
     interface SliderContainer {
-        "callback": (item: ISlider.Item) => void;
-        "itemRender": (state: ISlider.Item) => JSX.Element;
-        "items": ISlider.Item[];
-        "ratio": string;
-        "variant": ISlider.IVariant;
+        "config": ISlider.Config;
+    }
+    interface SocialInfo {
     }
     interface TreeView {
         "config": ITreeView.Config;
     }
     interface UploaderContainer {
-        "upload": (config?: IUploader.Config) => Promise<void>;
+    }
+    interface YoutubeInfo {
     }
 }
 declare global {
@@ -110,17 +134,23 @@ declare global {
         prototype: HTMLAutoCompleteInputElement;
         new (): HTMLAutoCompleteInputElement;
     };
+    interface HTMLBankInfoElement extends Components.BankInfo, HTMLStencilElement {
+    }
+    var HTMLBankInfoElement: {
+        prototype: HTMLBankInfoElement;
+        new (): HTMLBankInfoElement;
+    };
     interface HTMLContextMenuElement extends Components.ContextMenu, HTMLStencilElement {
     }
     var HTMLContextMenuElement: {
         prototype: HTMLContextMenuElement;
         new (): HTMLContextMenuElement;
     };
-    interface HTMLDetailViewElement extends Components.DetailView, HTMLStencilElement {
+    interface HTMLDateTimePickerElement extends Components.DateTimePicker, HTMLStencilElement {
     }
-    var HTMLDetailViewElement: {
-        prototype: HTMLDetailViewElement;
-        new (): HTMLDetailViewElement;
+    var HTMLDateTimePickerElement: {
+        prototype: HTMLDateTimePickerElement;
+        new (): HTMLDateTimePickerElement;
     };
     interface HTMLEventCalendarElement extends Components.EventCalendar, HTMLStencilElement {
     }
@@ -128,17 +158,29 @@ declare global {
         prototype: HTMLEventCalendarElement;
         new (): HTMLEventCalendarElement;
     };
+    interface HTMLFileDetailElement extends Components.FileDetail, HTMLStencilElement {
+    }
+    var HTMLFileDetailElement: {
+        prototype: HTMLFileDetailElement;
+        new (): HTMLFileDetailElement;
+    };
     interface HTMLFileExplorerElement extends Components.FileExplorer, HTMLStencilElement {
     }
     var HTMLFileExplorerElement: {
         prototype: HTMLFileExplorerElement;
         new (): HTMLFileExplorerElement;
     };
-    interface HTMLFolderViewElement extends Components.FolderView, HTMLStencilElement {
+    interface HTMLFolderDetailElement extends Components.FolderDetail, HTMLStencilElement {
     }
-    var HTMLFolderViewElement: {
-        prototype: HTMLFolderViewElement;
-        new (): HTMLFolderViewElement;
+    var HTMLFolderDetailElement: {
+        prototype: HTMLFolderDetailElement;
+        new (): HTMLFolderDetailElement;
+    };
+    interface HTMLFolderSelectElement extends Components.FolderSelect, HTMLStencilElement {
+    }
+    var HTMLFolderSelectElement: {
+        prototype: HTMLFolderSelectElement;
+        new (): HTMLFolderSelectElement;
     };
     interface HTMLFormValidatorElement extends Components.FormValidator, HTMLStencilElement {
     }
@@ -152,6 +194,30 @@ declare global {
         prototype: HTMLFsIconElement;
         new (): HTMLFsIconElement;
     };
+    interface HTMLGuestManagerElement extends Components.GuestManager, HTMLStencilElement {
+    }
+    var HTMLGuestManagerElement: {
+        prototype: HTMLGuestManagerElement;
+        new (): HTMLGuestManagerElement;
+    };
+    interface HTMLHomePageElement extends Components.HomePage, HTMLStencilElement {
+    }
+    var HTMLHomePageElement: {
+        prototype: HTMLHomePageElement;
+        new (): HTMLHomePageElement;
+    };
+    interface HTMLLayoutCmpElement extends Components.LayoutCmp, HTMLStencilElement {
+    }
+    var HTMLLayoutCmpElement: {
+        prototype: HTMLLayoutCmpElement;
+        new (): HTMLLayoutCmpElement;
+    };
+    interface HTMLLoginPageElement extends Components.LoginPage, HTMLStencilElement {
+    }
+    var HTMLLoginPageElement: {
+        prototype: HTMLLoginPageElement;
+        new (): HTMLLoginPageElement;
+    };
     interface HTMLNotifyContainerElement extends Components.NotifyContainer, HTMLStencilElement {
     }
     var HTMLNotifyContainerElement: {
@@ -164,11 +230,29 @@ declare global {
         prototype: HTMLPanelManagerElement;
         new (): HTMLPanelManagerElement;
     };
+    interface HTMLSermonInfoElement extends Components.SermonInfo, HTMLStencilElement {
+    }
+    var HTMLSermonInfoElement: {
+        prototype: HTMLSermonInfoElement;
+        new (): HTMLSermonInfoElement;
+    };
+    interface HTMLSignupPageElement extends Components.SignupPage, HTMLStencilElement {
+    }
+    var HTMLSignupPageElement: {
+        prototype: HTMLSignupPageElement;
+        new (): HTMLSignupPageElement;
+    };
     interface HTMLSliderContainerElement extends Components.SliderContainer, HTMLStencilElement {
     }
     var HTMLSliderContainerElement: {
         prototype: HTMLSliderContainerElement;
         new (): HTMLSliderContainerElement;
+    };
+    interface HTMLSocialInfoElement extends Components.SocialInfo, HTMLStencilElement {
+    }
+    var HTMLSocialInfoElement: {
+        prototype: HTMLSocialInfoElement;
+        new (): HTMLSocialInfoElement;
     };
     interface HTMLTreeViewElement extends Components.TreeView, HTMLStencilElement {
     }
@@ -182,62 +266,87 @@ declare global {
         prototype: HTMLUploaderContainerElement;
         new (): HTMLUploaderContainerElement;
     };
+    interface HTMLYoutubeInfoElement extends Components.YoutubeInfo, HTMLStencilElement {
+    }
+    var HTMLYoutubeInfoElement: {
+        prototype: HTMLYoutubeInfoElement;
+        new (): HTMLYoutubeInfoElement;
+    };
     interface HTMLElementTagNameMap {
         "app-root": HTMLAppRootElement;
         "audio-player": HTMLAudioPlayerElement;
         "auto-complete-input": HTMLAutoCompleteInputElement;
+        "bank-info": HTMLBankInfoElement;
         "context-menu": HTMLContextMenuElement;
-        "detail-view": HTMLDetailViewElement;
+        "date-time-picker": HTMLDateTimePickerElement;
         "event-calendar": HTMLEventCalendarElement;
+        "file-detail": HTMLFileDetailElement;
         "file-explorer": HTMLFileExplorerElement;
-        "folder-view": HTMLFolderViewElement;
+        "folder-detail": HTMLFolderDetailElement;
+        "folder-select": HTMLFolderSelectElement;
         "form-validator": HTMLFormValidatorElement;
         "fs-icon": HTMLFsIconElement;
+        "guest-manager": HTMLGuestManagerElement;
+        "home-page": HTMLHomePageElement;
+        "layout-cmp": HTMLLayoutCmpElement;
+        "login-page": HTMLLoginPageElement;
         "notify-container": HTMLNotifyContainerElement;
         "panel-manager": HTMLPanelManagerElement;
+        "sermon-info": HTMLSermonInfoElement;
+        "signup-page": HTMLSignupPageElement;
         "slider-container": HTMLSliderContainerElement;
+        "social-info": HTMLSocialInfoElement;
         "tree-view": HTMLTreeViewElement;
         "uploader-container": HTMLUploaderContainerElement;
+        "youtube-info": HTMLYoutubeInfoElement;
     }
 }
 declare namespace LocalJSX {
     interface AppRoot {
     }
     interface AudioPlayer {
-        "canDrag"?: boolean;
-        "list"?: {
-        title: string;
-        type: 'URL' | 'BLOB';
-        url: string;
-    }[];
+        "config"?: IAudioPlayer.Config;
     }
     interface AutoCompleteInput {
         "attrs"?: Record<string, any>;
         "onSelect"?: (value: string, label?: string) => void;
         "options"?: IOption[];
     }
+    interface BankInfo {
+    }
     interface ContextMenu {
     }
-    interface DetailView {
-        "item"?: any;
+    interface DateTimePicker {
+        "config"?: Partial<IDateTimePicker.Config>;
+        "onClose"?: () => void;
+        "pickerMode"?: IDateTimePicker.PickerMode;
     }
     interface EventCalendar {
-        "draggable"?: boolean;
-        "onDelete"?: (data: ICalendar.Event) => Promise<void>;
         "onMinimize"?: () => {};
-        "onSave"?: (data: ICalendar.Event) => Promise<any>;
+    }
+    interface FileDetail {
+        "item"?: any;
     }
     interface FileExplorer {
     }
-    interface FolderView {
+    interface FolderDetail {
         "item"?: IFSObject;
         "minimal"?: boolean;
         "onClose"?: () => void;
         "onSuccess"?: (item: IFSObject) => Promise<void>;
     }
+    interface FolderSelect {
+        "buttonName"?: FolderSelectorProps['buttonName'];
+        "initFolderId"?: FolderSelectorProps['initFolderId'];
+        "inputProps"?: FolderSelectorProps['inputProps'];
+        "onClose"?: FolderSelectorProps['onClose'];
+        "onSuccess"?: FolderSelectorProps['onSuccess'];
+    }
     interface FormValidator {
         "autoDisable"?: boolean;
-        "errorFormatter"?: (errors: IValidationError[]) => string;
+        "errorFormatter"?: ErrorFormatter;
+        "errorSeparator"?: string;
+        "fullWidth"?: boolean;
         "model": IBaseModel;
         "submit": (arg0: IBaseModel) => void;
         "validateAt"?: 'CHANGE' | 'SUBMIT';
@@ -245,50 +354,81 @@ declare namespace LocalJSX {
     interface FsIcon {
         "align"?: 'bottom' | 'right';
         "clickHandler"?: (item: IFSObject) => void;
+        "color"?: 'default' | 'active' | 'warning' | 'error' | 'confirm';
         "editable"?: boolean;
         "fs"?: IFSObject;
         "height"?: string;
+        "isActive"?: boolean;
         "isSelected"?: (id: string) => boolean;
         "label"?: string;
         "name"?: string;
+        "onContextMenu"?: (event: MouseEvent, item?: IFSObject) => void;
         "onTitleChange"?: (newTitle: string, item?: IFSObject) => void;
         "selectHandler"?: (item: IFSObject) => void;
+        "singlelinelabel"?: boolean;
         "size"?: 'small' | 'normal' | 'big';
         "width"?: string;
+    }
+    interface GuestManager {
+        "onClose"?: () => void;
+        "onSelect"?: (ids: string[]) => void;
+        "selectedIds"?: string[];
+    }
+    interface HomePage {
+    }
+    interface LayoutCmp {
+        "history"?: RouterHistory;
+    }
+    interface LoginPage {
     }
     interface NotifyContainer {
         "validation"?: Record<string, any>;
     }
     interface PanelManager {
     }
+    interface SermonInfo {
+    }
+    interface SignupPage {
+    }
     interface SliderContainer {
-        "callback"?: (item: ISlider.Item) => void;
-        "itemRender"?: (state: ISlider.Item) => JSX.Element;
-        "items": ISlider.Item[];
-        "ratio"?: string;
-        "variant"?: ISlider.IVariant;
+        "config"?: ISlider.Config;
+    }
+    interface SocialInfo {
     }
     interface TreeView {
         "config"?: ITreeView.Config;
     }
     interface UploaderContainer {
     }
+    interface YoutubeInfo {
+    }
     interface IntrinsicElements {
         "app-root": AppRoot;
         "audio-player": AudioPlayer;
         "auto-complete-input": AutoCompleteInput;
+        "bank-info": BankInfo;
         "context-menu": ContextMenu;
-        "detail-view": DetailView;
+        "date-time-picker": DateTimePicker;
         "event-calendar": EventCalendar;
+        "file-detail": FileDetail;
         "file-explorer": FileExplorer;
-        "folder-view": FolderView;
+        "folder-detail": FolderDetail;
+        "folder-select": FolderSelect;
         "form-validator": FormValidator;
         "fs-icon": FsIcon;
+        "guest-manager": GuestManager;
+        "home-page": HomePage;
+        "layout-cmp": LayoutCmp;
+        "login-page": LoginPage;
         "notify-container": NotifyContainer;
         "panel-manager": PanelManager;
+        "sermon-info": SermonInfo;
+        "signup-page": SignupPage;
         "slider-container": SliderContainer;
+        "social-info": SocialInfo;
         "tree-view": TreeView;
         "uploader-container": UploaderContainer;
+        "youtube-info": YoutubeInfo;
     }
 }
 export { LocalJSX as JSX };
@@ -298,18 +438,29 @@ declare module "@stencil/core" {
             "app-root": LocalJSX.AppRoot & JSXBase.HTMLAttributes<HTMLAppRootElement>;
             "audio-player": LocalJSX.AudioPlayer & JSXBase.HTMLAttributes<HTMLAudioPlayerElement>;
             "auto-complete-input": LocalJSX.AutoCompleteInput & JSXBase.HTMLAttributes<HTMLAutoCompleteInputElement>;
+            "bank-info": LocalJSX.BankInfo & JSXBase.HTMLAttributes<HTMLBankInfoElement>;
             "context-menu": LocalJSX.ContextMenu & JSXBase.HTMLAttributes<HTMLContextMenuElement>;
-            "detail-view": LocalJSX.DetailView & JSXBase.HTMLAttributes<HTMLDetailViewElement>;
+            "date-time-picker": LocalJSX.DateTimePicker & JSXBase.HTMLAttributes<HTMLDateTimePickerElement>;
             "event-calendar": LocalJSX.EventCalendar & JSXBase.HTMLAttributes<HTMLEventCalendarElement>;
+            "file-detail": LocalJSX.FileDetail & JSXBase.HTMLAttributes<HTMLFileDetailElement>;
             "file-explorer": LocalJSX.FileExplorer & JSXBase.HTMLAttributes<HTMLFileExplorerElement>;
-            "folder-view": LocalJSX.FolderView & JSXBase.HTMLAttributes<HTMLFolderViewElement>;
+            "folder-detail": LocalJSX.FolderDetail & JSXBase.HTMLAttributes<HTMLFolderDetailElement>;
+            "folder-select": LocalJSX.FolderSelect & JSXBase.HTMLAttributes<HTMLFolderSelectElement>;
             "form-validator": LocalJSX.FormValidator & JSXBase.HTMLAttributes<HTMLFormValidatorElement>;
             "fs-icon": LocalJSX.FsIcon & JSXBase.HTMLAttributes<HTMLFsIconElement>;
+            "guest-manager": LocalJSX.GuestManager & JSXBase.HTMLAttributes<HTMLGuestManagerElement>;
+            "home-page": LocalJSX.HomePage & JSXBase.HTMLAttributes<HTMLHomePageElement>;
+            "layout-cmp": LocalJSX.LayoutCmp & JSXBase.HTMLAttributes<HTMLLayoutCmpElement>;
+            "login-page": LocalJSX.LoginPage & JSXBase.HTMLAttributes<HTMLLoginPageElement>;
             "notify-container": LocalJSX.NotifyContainer & JSXBase.HTMLAttributes<HTMLNotifyContainerElement>;
             "panel-manager": LocalJSX.PanelManager & JSXBase.HTMLAttributes<HTMLPanelManagerElement>;
+            "sermon-info": LocalJSX.SermonInfo & JSXBase.HTMLAttributes<HTMLSermonInfoElement>;
+            "signup-page": LocalJSX.SignupPage & JSXBase.HTMLAttributes<HTMLSignupPageElement>;
             "slider-container": LocalJSX.SliderContainer & JSXBase.HTMLAttributes<HTMLSliderContainerElement>;
+            "social-info": LocalJSX.SocialInfo & JSXBase.HTMLAttributes<HTMLSocialInfoElement>;
             "tree-view": LocalJSX.TreeView & JSXBase.HTMLAttributes<HTMLTreeViewElement>;
             "uploader-container": LocalJSX.UploaderContainer & JSXBase.HTMLAttributes<HTMLUploaderContainerElement>;
+            "youtube-info": LocalJSX.YoutubeInfo & JSXBase.HTMLAttributes<HTMLYoutubeInfoElement>;
         }
     }
 }

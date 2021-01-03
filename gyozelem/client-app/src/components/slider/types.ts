@@ -1,22 +1,27 @@
 import { JSX } from '@stencil/core';
+import FSObject from '../../model/FSObject';
 
 export declare namespace ISlider {
 
-    interface Item extends Record<string, any> {
-        url: string;
-        description?: string;
-    }
-
     type IVariant = 'image' | 'youtube';
+
+    interface Config {
+        ratio?: string;
+        callback?: (item: FSObject) => void;
+        itemRender?: (state: FSObject) => JSX.Element;
+        index?: number;
+        items: FSObject[];
+        variant?: IVariant;
+    }    
 
     interface Props {
         ratio?: '16:9' | string,
         counter?: any;
         idx?: number;
-        items: Item[];
+        items: FSObject[];
         style?: string;
         variant?: IVariant;
-        callback?: (item: Item) => void;
+        callback?: (item: FSObject) => void;
         renderItem?: (state: State) => JSX.Element;
     }
     

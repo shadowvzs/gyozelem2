@@ -1,0 +1,37 @@
+:host {
+    font-family: 'Courier New', Courier, monospace;
+    width: 100%;
+    min-height: 200px;
+}
+
+:host > section {
+    position: relative;
+    min-height: 320px;
+    min-width: 320px;
+    height: clamp(200px, 100%, 90vh);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+:host > section > main {
+    position: relative;
+    border: 1px inset #000;
+    flex: 1;
+}
+
+:host > section > main tree-view {
+    overflow: auto;
+}
+/* 
+:host > section > main tree-view .icon-wrapper .label .title {
+    white-space: nowrap;
+    word-break: normal;
+} */
+
+:host > section > footer {
+    padding: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

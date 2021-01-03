@@ -1,0 +1,44 @@
+.sermon-info {
+    font-family: 'Open Sans', serif;
+    width: 100%;
+    max-width: 230px;
+    margin: 20px 50px;
+    padding: 10px 10px;
+    font-size: 14px;
+    background: linear-gradient(70deg, #99f, #ddf);
+    border: 1px solid rgba(100,100,100,0.5);
+    border-radius: 5px;
+    text-shadow: 0.1em 0.1em 0.2em #aaa;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    display: inline-block;
+    line-height: 22.6px;
+    min-height: 400px;
+}
+
+.sermon-info h2 {
+    font-size: 22px;
+    font-family: cursive;
+    font-weight: bold;
+}
+
+.sermon-info a {
+    font-size: 14px;
+    font-family: cursive;
+    font-weight: bold;
+}
+
+.sermon-info a:hover {
+    text-shadow: 0 0 2px rgba(0, 0, 255, 0.5);
+}
+
+.sermon-info mb-2 {
+    margin-bottom: 8px;
+}
+
+.sermon-info mt-2 {
+    margin-top: 8px;
+}
+
+.sermon-info mt-3 {
+    margin-top: 12px;
+}
