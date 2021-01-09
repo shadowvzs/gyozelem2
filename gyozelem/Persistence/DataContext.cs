@@ -32,6 +32,7 @@ namespace Persistence
         public DbSet<CalendarEvent> CalendarEvents { get; set; }
         public DbSet<CalendarGuest> CalendarGuests { get; set; }
         public DbSet<Guest> Guests { get; set; }
+        public DbSet<Message> Messages { get; set; }
 
         public string EntityStateToString(EntityState state) {
             switch (state)

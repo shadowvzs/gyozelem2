@@ -12,25 +12,27 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace Application.Guests
+namespace Application.Messages
 {
     public class Edit
     {
-        public class Command : IRequest<Guest>
+        public class Command : IRequest<Message>
         {
             public Guid Id { get; set; }
-            public string FullName { get; set; }
+            public string Title { get; set; }
+            public string Content { get; set; }
         }
 
         public class CommandValidator : AbstractValidator<Command>
         {
             public CommandValidator()
             {
-                RuleFor(x => x.FullName).NotEmpty();
+                RuleFor(x => x.Title).NotEmpty();
+                RuleFor(x => x.Content).NotEmpty();
             }
         }
 
-        public class Handler : IRequestHandler<Command, Guest>
+        public class Handler : IRequestHandler<Command, Message>
         {
             private readonly DataContext _context;
             private readonly IUserAccessor _userAccessor;
@@ -41,30 +43,31 @@ namespace Application.Guests
                 _userAccessor = userAccessor;
             }
 
-            public async Task<Guest> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Message> Handle(Command request, CancellationToken cancellationToken)
             {
 
                 var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == _userAccessor.GetCurrentUsername());
-                if (user == null || (user.Rank != AppUserRank.Editor && user.Rank != AppUserRank.Admin))
+                if (user == null)
                 {
                     throw new RestException(HttpStatusCode.Unauthorized);
                 }
 
-                var guest = await _context.Guests.FindAsync(request.Id);
+                var message = await _context.Messages.FindAsync(request.Id);
 
-                if (guest == null) {
-                    throw new RestException(HttpStatusCode.NotFound, new { Guest = "Not found" });
+                if (message == null || message.Id == user.Id) {
+                    throw new RestException(HttpStatusCode.NotFound, new { Message = "Not found" });
                 }
 
-                guest.FullName = request.FullName;
-                guest.UpdatedAt = DateTime.Now;
-                guest.UpdatedBy = Guid.Parse(user.Id);
+                message.Title     = request.Title;
+                message.Content   = request.Content;
+                message.UpdatedAt = DateTime.Now;
+                message.UpdatedBy = Guid.Parse(user.Id);
 
                 if (await _context.SaveChangesAsync() == 0) {
-                    throw new RestException(HttpStatusCode.InternalServerError, new { Guest = "Problem saving changes" });
+                    throw new RestException(HttpStatusCode.InternalServerError, new { Message = "Problem saving changes" });
                 }
                 
-                return guest;
+                return message;
             }
         }
     }
