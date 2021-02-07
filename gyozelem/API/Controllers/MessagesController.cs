@@ -6,22 +6,15 @@ using Microsoft.AspNetCore.Authorization;
 using MediatR;
 using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace API.Controllers
 {
     public class MessagesController : BaseController
     {
-        // GET api/messages/
-        [AllowAnonymous]
-        [HttpGet]
-        public async Task<ActionResult<List.MessagesEnvelope>> List()
-        {
-            return await Mediator.Send(new List.Query());
-        }
-
         // POST api/messages
         [HttpPost("")]
-        public async Task<ActionResult<Message>> Create(Create.Command command)
+        public async Task<ActionResult<Message>> CreateMessage(CreateMessage.Command command)
         {
             return await Mediator.Send(command);
         }
@@ -29,16 +22,17 @@ namespace API.Controllers
         // PUT api/messages/6319491A-EBDA-49CE-BA7F-7917D4B3E1A9
         // [Authorize]
         [HttpPut("{id}")]
-        public async Task<ActionResult<Message>> Edit(Edit.Command command)
+        public async Task<ActionResult<Message>> MessageEdit(EditMessage.Command command)
         {
             return await Mediator.Send(command);
         }
 
         // DELETE api/messages/6319491A-EBDA-49CE-BA7F-7917D4B3E1A9
         // [Authorize]
-        public async Task<ActionResult<Unit>> Delete(Guid id)
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Unit>> DeleteMessage(Guid id)
         {
-            return await Mediator.Send(new Delete.Command{ Id = id });
+            return await Mediator.Send(new DeleteMessage.Command{ Id = id });
         }
     }
 }

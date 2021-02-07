@@ -1,11 +1,10 @@
 using Application.Interfaces;
-using MediatR;
-using Domain;
-using AutoMapper;
-using Persistence;
-using FluentValidation;
 using Application.Errors;
-using Microsoft.AspNetCore.Identity;
+using Domain;
+using Persistence;
+
+using MediatR;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
 using System;
@@ -17,19 +16,19 @@ using System.Collections.Generic;
 
 namespace Application.Messages
 {
-    public class List
+    public class ListThreads
     {
 
-        public class MessagesEnvelope
+        public class MessageThreadEnvelope
         {
-            public List<Message> Items { get; set; }
+            public List<MessageThread> Items { get; set; }
             public int ItemCount { get; set; }
         }
-        public class Query : IRequest<MessagesEnvelope>
+        public class Query : IRequest<MessageThreadEnvelope>
         {
         }
 
-        public class Handler : IRequestHandler<Query, MessagesEnvelope>
+        public class Handler : IRequestHandler<Query, MessageThreadEnvelope>
         {
 
             private readonly DataContext _context;
@@ -43,22 +42,22 @@ namespace Application.Messages
                 _userAccessor = userAccessor;                
             }
 
-            public async Task<MessagesEnvelope> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<MessageThreadEnvelope> Handle(Query request, CancellationToken cancellationToken)
             {
-                var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == _userAccessor.GetCurrentUsername());
-                if (user == null)
-                {
-                    throw new RestException(HttpStatusCode.Unauthorized);
-                }
+                // var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == _userAccessor.GetCurrentUsername());
+                // if (user == null)
+                // {
+                //     throw new RestException(HttpStatusCode.Unauthorized);
+                // }
 
-                var queryable = _context.Messages
-                    .Where(x => x.SenderId.ToString() == user.Id || x.TargetId.ToString() == user.Id)
+                var queryable = _context.MessageThreads
                     .OrderBy(x => x.CreatedAt)
                     .AsQueryable();
+                    // .Where(x => x.SenderId.ToString() == user.Id || x.TargetId.ToString() == user.Id)
 
                 var items = await queryable.ToListAsync();
 
-                return new MessagesEnvelope
+                return new MessageThreadEnvelope
                 {
                     Items = items,
                     ItemCount = queryable.Count()

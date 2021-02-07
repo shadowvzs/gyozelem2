@@ -154,7 +154,7 @@ export class PanelManager {
             config.panelHook(windowConfig);
         }
         
-        window['panels'] = this.state;
+        // window['panels'] = this.state;
         // this.state.panels[windowConfig.windowId] = windowConfig;
     }
 

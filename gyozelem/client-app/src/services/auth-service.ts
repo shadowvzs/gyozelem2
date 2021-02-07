@@ -2,12 +2,12 @@ import { broadcast } from "../global/Broadcast";
 import { globalStore } from "../global/stores";
 
 import { LoggedUserData, LoginUserData, SignUpUserData } from "../model/User";
+import { array2ArrayMap } from "../util/core";
 import { request } from "./request";
 
-export namespace IAuth {
-    export interface State {
-        user: LoggedUserData | null;
-    }
+type Envelope<T> = {
+    items: T[];
+    itemCount: number;
 }
 
 export class AuthService {
@@ -16,7 +16,7 @@ export class AuthService {
 
     public login = async (loginUserData: LoginUserData) => {
         try {
-            const userData = await this.request.send<LoggedUserData>('/api/user/login', { 
+            const userData = await this.request.send<LoggedUserData>('/api/users/login', { 
                 method: 'POST',
                 data: loginUserData,
                 responseType: 'json'
@@ -40,7 +40,7 @@ export class AuthService {
 
     public signUp = async (signUpData: SignUpUserData) => {
         try {
-            const userData = await this.request.send<LoggedUserData>('/api/user/register', { 
+            const userData = await this.request.send<LoggedUserData>('/api/users/register', { 
                 method: 'POST',
                 data: signUpData,
                 responseType: 'json'
@@ -50,6 +50,16 @@ export class AuthService {
         } catch(err) {
             console.error(err);
             broadcast.emit('notify:send', { type: 'error', message: 'Registracio nem sikerult!' });
+        }
+    }
+
+    public loadUsers = async () => {
+        try {
+            const users = await this.request.send<Envelope<LoggedUserData>>('/api/users', { method: 'GET', responseType: 'json' });
+            const userMap = array2ArrayMap(users.data.items);
+            globalStore.set('users', userMap);
+        } catch (err) {
+            console.error('User loading error: ', err);
         }
     }
 }

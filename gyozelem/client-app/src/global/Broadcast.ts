@@ -41,7 +41,8 @@ export class Broadcast {
         if (broadcast) { return broadcast; }
         const bInstance = new Broadcast();
         broadcast = bInstance;
-        return await bInstance.init();
+        await bInstance.init();
+        return broadcast;
     }
 
     private signalRConnection: HubConnection;
@@ -92,6 +93,6 @@ export class Broadcast {
 
 export interface ISignalREntity<T> {
     entity: T;
-    state: 'added' | 'modified' | 'deleted';
+    state: 'Added' | 'Modified' | 'Deleted';
     target: string;
 }

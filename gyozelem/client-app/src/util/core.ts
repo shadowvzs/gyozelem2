@@ -22,9 +22,9 @@ export const guid = (): string => {
     });
 }
 
-export const delay = (sec: number) => {
+export const delay = (sec: number): Promise<number> => {
     return new Promise((resolve) => {
-        setTimeout(() => resolve(), sec * 1000);
+        setTimeout(() => resolve(sec), sec * 1000);
     });
 }
 

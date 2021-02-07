@@ -20,10 +20,14 @@ export class CrudService<T extends IBaseEntity<T>> {
 
     public static cacheMap = createStore<ICrudService.ICacheMap>({});
 
+    // need added/modified/ deleted subscription
+    // private subscriptionMap: Map<Function, 
+
     public get items() { return this._store.get('list'); }
     public set items(items: T[]) { this._store.set('list', items); }
     public get totalCount() { return this._store.get('totalCount'); }
     public set totalCount(nr: number) { this._store.set('totalCount', nr); }
+    public request = request;
     public sortEnabled: boolean = true;
 
     protected name: string;
@@ -166,7 +170,6 @@ export class CrudService<T extends IBaseEntity<T>> {
                 if (_endpoints[key]) { _endpoints[key] = { ..._endpoints[key], ...value }; }
             })
         }
-
         this._endpoints = _endpoints;
     }
 
@@ -174,7 +177,7 @@ export class CrudService<T extends IBaseEntity<T>> {
     public async getPromise(id: Id, filters: Record<string, string | number | boolean> = {}): Promise<T> {
         this._store.set('isLoading', true);
         const params = { id, ...filters };
-        const response = await request.send<T>(this._endpoints.get.url, { data: params, method: 'GET' });
+        const response = await this.request.send<T>(this._endpoints.get.url, { data: params, method: 'GET' });
         this._store.set('isLoading', false);
         return this.receive(response.data, true);
     }
@@ -183,8 +186,8 @@ export class CrudService<T extends IBaseEntity<T>> {
         return item.id ? this.updatePromise(item) : this.createPromise(item);
     }
 
-    public async createPromise(data: T): Promise<T> {
-        const response = await request.send<T>(this._endpoints.create.url, { data, method: 'POST' });
+    public async createPromise<P = T>(data: P): Promise<T> {
+        const response = await this.request.send<T>(this._endpoints.create.url, { data, method: 'POST' });
         const item = this.receive(response.data, true);
         item.$new = true;
         return item;
@@ -194,7 +197,7 @@ export class CrudService<T extends IBaseEntity<T>> {
         const oldItem = this.getCacheItem(data.id);
         let clonedItem: T;
         if (oldItem) { clonedItem = this.deserialize(this.serialize(data)); }
-        const response = await request.send<T>(this._endpoints.update.url + '/' + data.id, { data, method: 'PUT' });
+        const response = await this.request.send<T>(this._endpoints.update.url + '/' + data.id, { data, method: 'PUT' });
         const item = this.receive(response.data, true);
 
         if (clonedItem) { item.$original = clonedItem; }
@@ -203,17 +206,17 @@ export class CrudService<T extends IBaseEntity<T>> {
     }
 
     public async bulkUpdatePromise(items: T[]): Promise<T[]> {
-        await request.send<T>(this._endpoints.update.url, { method: 'PUT', data: items });
+        await this.request.send<T>(this._endpoints.update.url, { method: 'PUT', data: items });
         return items;
     }
 
     public async deletePromise(id: Id): Promise<void> {
-        await request.send<T>(this._endpoints.update.url + '/' + id, { method: 'DELETE' });
+        await this.request.send<T>(this._endpoints.update.url + '/' + id, { method: 'DELETE' });
         this.removeCacheItem(id);
     }
 
     public async bulkDeletePromise(ids: Id[]): Promise<void> {
-        await request.send<T>(this._endpoints.update.url, { method: 'DELETE', data: ids });
+        await this.request.send<T>(this._endpoints.update.url, { method: 'DELETE', data: ids });
         ids.forEach(id => this.removeCacheItem(id));
     }
     //#endregion
@@ -223,7 +226,7 @@ export class CrudService<T extends IBaseEntity<T>> {
         this._store.set('isLoading', true);
         if (!params.sortKey && this.sortEnabled) { params.sortKey = this._store.get('sortKey'); }
         if (!params.sortDirection && this.sortEnabled) { params.sortDirection = this._store.get('sortDirection'); }
-        const response = await request.send<ICrudService.Pagination<T>>(this._endpoints.getList.url, { data: params, method: 'GET' });
+        const response = await this.request.send<ICrudService.Pagination<T>>(this._endpoints.getList.url, { data: params, method: 'GET' });
         const items = response.data.items.map(x => this.receive(x));
         if (!config.noList) {
             this.items = items;
@@ -279,12 +282,12 @@ export class CrudService<T extends IBaseEntity<T>> {
         return this.addCacheItem(item);
     }
 
-    private serialize(data: T): T {
+    public serialize(data: T): T {
         const serializedData = data.toJSON ? data.toJSON() : data;
         return serializedData;
     }
 
-    private deserialize(data: T): T {
+    public deserialize(data: T): T {
         if (data.toJSON) {
             return data;
         }

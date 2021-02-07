@@ -48,8 +48,8 @@ namespace API.Controllers
         }
 
         // DELETE api/calendarevents/6319491A-EBDA-49CE-BA7F-7917D4B3E1A9
-        [HttpDelete("{id}")]
         // [Authorize]
+        [HttpDelete("{id}")]
         public async Task<ActionResult<Unit>> Delete(Guid id)
         {
             return await Mediator.Send(new Delete.Command{ Id = id });

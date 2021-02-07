@@ -27,14 +27,50 @@ export const anchorElem = (anchor: HTMLElement, target: HTMLElement, modifier?: 
     target.style.top = offsetY + 'px';
 }
 
-export const whenPageReady = new Promise((resolve) => {
-    if (document.readyState === "complete" || document.readyState === "interactive") {
-      resolve(true);
+export function isElementInViewport(el: HTMLElement) {
+    const rect = el.getBoundingClientRect();
+    const h = window.innerHeight || document.documentElement.clientHeight;
+    const w = window.innerWidth || document.documentElement.clientWidth;
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= h &&
+        rect.right <= w
+    );
+}
+
+export interface RelativeDistances {
+    top: number;
+    bottom: number;
+    left: number;
+    right: number;
+    moreSpace: {
+        top?: number;
+        left?: number;
+        right?: number;
+        bottom?: number;
     }
-    const cb = () => {
-      resolve(true);
-      window.removeEventListener('load', cb);
+}
+
+export function elementRelativeDistanceVsViewport(el: HTMLElement): RelativeDistances {
+    const rect = el.getBoundingClientRect();
+    const h = window.innerHeight || document.documentElement.clientHeight;
+    const w = window.innerWidth || document.documentElement.clientWidth;
+    const left = rect.left;
+    const top = rect.top;
+    const right = w - rect.right;
+    const bottom = h - rect.bottom;
+
+    const distances: RelativeDistances = {
+        top: top,
+        bottom: bottom,
+        left: left,
+        right: right,
+        moreSpace: {
+            [left > right ? 'left' : 'right']: left > right ? left: right,
+            [top > bottom ? 'top' : 'bottom']: top > bottom ? top: bottom,
+        }
     }
-    window.addEventListener('load', cb)
-      
-  });
+
+    return distances;
+}

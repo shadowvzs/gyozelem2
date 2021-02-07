@@ -16,7 +16,7 @@ using System.Collections.Generic;
 
 namespace Application.Messages
 {
-    public class Delete
+    public class DeleteMessage
     {
         public class Command : IRequest
         {

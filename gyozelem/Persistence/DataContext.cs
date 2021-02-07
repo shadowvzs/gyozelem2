@@ -33,6 +33,8 @@ namespace Persistence
         public DbSet<CalendarGuest> CalendarGuests { get; set; }
         public DbSet<Guest> Guests { get; set; }
         public DbSet<Message> Messages { get; set; }
+        public DbSet<MessageThread> MessageThreads { get; set; }
+        public DbSet<MessageThreadUser> MessageThreadUsers { get; set; }
 
         public string EntityStateToString(EntityState state) {
             switch (state)
@@ -89,6 +91,12 @@ namespace Persistence
             modelBuilder.Entity<CalendarEvent>()
                 .HasMany(b => b.CalendarGuests)
                 .WithOne();
+            modelBuilder.Entity<MessageThread>()
+                .HasMany(b => b.Users)
+                .WithOne();
+            modelBuilder.Entity<MessageThread>()
+                .HasMany(b => b.Messages)
+                .WithOne();                
             base.OnModelCreating(modelBuilder);
         }
     }

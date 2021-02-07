@@ -14,12 +14,11 @@ using System.Collections.Generic;
 
 namespace Application.Messages
 {
-    public class Edit
+    public class EditMessage
     {
         public class Command : IRequest<Message>
         {
             public Guid Id { get; set; }
-            public string Title { get; set; }
             public string Content { get; set; }
         }
 
@@ -27,7 +26,6 @@ namespace Application.Messages
         {
             public CommandValidator()
             {
-                RuleFor(x => x.Title).NotEmpty();
                 RuleFor(x => x.Content).NotEmpty();
             }
         }
@@ -54,11 +52,10 @@ namespace Application.Messages
 
                 var message = await _context.Messages.FindAsync(request.Id);
 
-                if (message == null || message.Id == user.Id) {
+                if (message == null || message.Id.ToString() == user.Id.ToString()) {
                     throw new RestException(HttpStatusCode.NotFound, new { Message = "Not found" });
                 }
 
-                message.Title     = request.Title;
                 message.Content   = request.Content;
                 message.UpdatedAt = DateTime.Now;
                 message.UpdatedBy = Guid.Parse(user.Id);

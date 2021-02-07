@@ -21,8 +21,8 @@ export class FolderView {
     @Prop()
     minimal: boolean;
 
-    private onSave = (item: IFSObject) => {
-        this.onSuccess(item)
+    private onSave = async (item: IFSObject) => {
+        return this.onSuccess(item)
             .then(() => this.onClose())
             .catch(console.error)
     }

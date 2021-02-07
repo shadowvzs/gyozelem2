@@ -84,10 +84,11 @@ namespace Application.User
                     {
                         return new User
                         {
+                            Id          = user.Id,
                             DisplayName = user.DisplayName,
-                            Token = _jwtGenerator.CreateToken(user),
-                            Username = user.UserName,
-                            Rank = user.Rank
+                            Token       = _jwtGenerator.CreateToken(user),
+                            Username    = user.UserName,
+                            Rank        = user.Rank
                         };
                     }
                 } catch (Exception e) {

@@ -1,7 +1,8 @@
 using Application.Interfaces;
-using MediatR;
 using Domain;
 using Persistence;
+
+using MediatR;
 using FluentValidation;
 using Application.Errors;
 using Microsoft.AspNetCore.Identity;
@@ -56,10 +57,11 @@ namespace Application.User
                 {
                     return new User
                     {
+                        Id          = user.Id,
                         DisplayName = user.DisplayName,
-                        Token = _jwtGenerator.CreateToken(user),
-                        Username = user.UserName,
-                        Rank = user.Rank
+                        Token       = _jwtGenerator.CreateToken(user),
+                        Username    = user.UserName,
+                        Rank        = user.Rank
                     };
                 }
 

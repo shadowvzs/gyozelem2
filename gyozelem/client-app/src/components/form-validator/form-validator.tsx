@@ -34,7 +34,7 @@ export class FormValidator {
     model!: IBaseModel;
 
     @Prop()
-    submit!: (arg0: IBaseModel) => void;
+    submit!: (arg0: IBaseModel) => Promise<IBaseModel | void>;
 
     @State()
     state: IFormValidator.State = {
@@ -210,7 +210,15 @@ export class FormValidator {
         if (errors.length) {
             broadcast.emit('notify:send', { type: 'error', message: errors.map(x => x.message).join('<br />')});
         } else {
-            this.submit(this.getValues());
+            const promise = this.submit(this.getValues());
+            if (promise instanceof Promise) {
+                console.log('it is a promise');
+                const model = await promise;
+                if (model) {
+                    console.log('aaaaaaaa', this.model)
+                    // change
+                }
+            }
             this.state.isDirty = false;
             Object.keys(this.state.touched).forEach(key => this.state.touched[key] = false);
         }

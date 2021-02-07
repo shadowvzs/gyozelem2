@@ -1,9 +1,10 @@
-using MediatR;
 using Domain;
 using Persistence;
+using Application.Interfaces;
+
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
-using Application.Interfaces;
 
 using System;
 using System.Collections.Generic;

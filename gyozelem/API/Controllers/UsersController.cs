@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace API.Controllers
 {
-    public class UserController : BaseController
+    public class UsersController : BaseController
     {
         [AllowAnonymous]
         [HttpPost("login")]
@@ -24,16 +24,24 @@ namespace API.Controllers
             return await Mediator.Send(command);
         }
 
-        [HttpGet]
+        [HttpGet("current-user")]
         public async Task<ActionResult<User>> CurrentUser()
         {
             return await Mediator.Send(new CurrentUser.Query());
         }
 
-        [HttpGet]
+        [HttpPost("rank")]
         public async Task<ActionResult<Unit>> SetRank(Rank.Command command)
         {
             return await Mediator.Send(command);
+        }
+
+        // GET api/users/
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<ActionResult<List.UsersEnvelope>> List()
+        {
+            return await Mediator.Send(new List.Query());
         }
 
     }

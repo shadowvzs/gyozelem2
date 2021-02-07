@@ -6,7 +6,7 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { IAudioPlayer } from "./components/audio-player/types";
-import { IOption } from "./components/form-validator/autocomplete";
+import { JSX } from "@stencil/core";
 import { IDateTimePicker } from "./components/date-time-picker/types";
 import { FolderSelectorProps, IFSObject } from "./model/FSObject";
 import { ErrorFormatter, IBaseModel, IValidationError } from "./components/form-validator/types";
@@ -20,9 +20,17 @@ export namespace Components {
         "config": IAudioPlayer.Config;
     }
     interface AutoCompleteInput {
-        "attrs": Record<string, any>;
-        "onSelect": (value: string, label?: string) => void;
-        "options": IOption[];
+        "inputProps": Record<string, any>;
+        "itemRender": (value: string) => JSX.Element;
+        "items": string[];
+        "keepOpen": boolean;
+        "multiSelect": boolean;
+        "onChange": (value: string[]) => void;
+        "onSelect": (value: string) => void;
+        "singleLine": number;
+        "suggestionRender": (value: string) => JSX.Element;
+        "value": string | string[];
+        "valueRender": (value: string) => JSX.Element;
     }
     interface BankInfo {
     }
@@ -60,7 +68,7 @@ export namespace Components {
         "errorSeparator": string;
         "fullWidth": boolean;
         "model": IBaseModel;
-        "submit": (arg0: IBaseModel) => void;
+        "submit": (arg0: IBaseModel) => Promise<IBaseModel | void>;
         "validateAt": 'CHANGE' | 'SUBMIT';
     }
     interface FsIcon {
@@ -93,6 +101,9 @@ export namespace Components {
     }
     interface LoginPage {
     }
+    interface MessengerCmp {
+        "onMinimize": () => {};
+    }
     interface NotifyContainer {
         "validation": Record<string, any>;
     }
@@ -111,6 +122,12 @@ export namespace Components {
         "config": ITreeView.Config;
     }
     interface UploaderContainer {
+    }
+    interface UserSelect {
+        "keepOpen": boolean;
+        "multiSelect": boolean;
+        "onChanged": (value: string[]) => void;
+        "value": string[];
     }
     interface YoutubeInfo {
     }
@@ -218,6 +235,12 @@ declare global {
         prototype: HTMLLoginPageElement;
         new (): HTMLLoginPageElement;
     };
+    interface HTMLMessengerCmpElement extends Components.MessengerCmp, HTMLStencilElement {
+    }
+    var HTMLMessengerCmpElement: {
+        prototype: HTMLMessengerCmpElement;
+        new (): HTMLMessengerCmpElement;
+    };
     interface HTMLNotifyContainerElement extends Components.NotifyContainer, HTMLStencilElement {
     }
     var HTMLNotifyContainerElement: {
@@ -266,6 +289,12 @@ declare global {
         prototype: HTMLUploaderContainerElement;
         new (): HTMLUploaderContainerElement;
     };
+    interface HTMLUserSelectElement extends Components.UserSelect, HTMLStencilElement {
+    }
+    var HTMLUserSelectElement: {
+        prototype: HTMLUserSelectElement;
+        new (): HTMLUserSelectElement;
+    };
     interface HTMLYoutubeInfoElement extends Components.YoutubeInfo, HTMLStencilElement {
     }
     var HTMLYoutubeInfoElement: {
@@ -290,6 +319,7 @@ declare global {
         "home-page": HTMLHomePageElement;
         "layout-cmp": HTMLLayoutCmpElement;
         "login-page": HTMLLoginPageElement;
+        "messenger-cmp": HTMLMessengerCmpElement;
         "notify-container": HTMLNotifyContainerElement;
         "panel-manager": HTMLPanelManagerElement;
         "sermon-info": HTMLSermonInfoElement;
@@ -298,6 +328,7 @@ declare global {
         "social-info": HTMLSocialInfoElement;
         "tree-view": HTMLTreeViewElement;
         "uploader-container": HTMLUploaderContainerElement;
+        "user-select": HTMLUserSelectElement;
         "youtube-info": HTMLYoutubeInfoElement;
     }
 }
@@ -308,9 +339,17 @@ declare namespace LocalJSX {
         "config"?: IAudioPlayer.Config;
     }
     interface AutoCompleteInput {
-        "attrs"?: Record<string, any>;
-        "onSelect"?: (value: string, label?: string) => void;
-        "options"?: IOption[];
+        "inputProps"?: Record<string, any>;
+        "itemRender"?: (value: string) => JSX.Element;
+        "items"?: string[];
+        "keepOpen"?: boolean;
+        "multiSelect"?: boolean;
+        "onChange"?: (value: string[]) => void;
+        "onSelect"?: (value: string) => void;
+        "singleLine"?: number;
+        "suggestionRender"?: (value: string) => JSX.Element;
+        "value"?: string | string[];
+        "valueRender"?: (value: string) => JSX.Element;
     }
     interface BankInfo {
     }
@@ -348,7 +387,7 @@ declare namespace LocalJSX {
         "errorSeparator"?: string;
         "fullWidth"?: boolean;
         "model": IBaseModel;
-        "submit": (arg0: IBaseModel) => void;
+        "submit": (arg0: IBaseModel) => Promise<IBaseModel | void>;
         "validateAt"?: 'CHANGE' | 'SUBMIT';
     }
     interface FsIcon {
@@ -381,6 +420,9 @@ declare namespace LocalJSX {
     }
     interface LoginPage {
     }
+    interface MessengerCmp {
+        "onMinimize"?: () => {};
+    }
     interface NotifyContainer {
         "validation"?: Record<string, any>;
     }
@@ -399,6 +441,12 @@ declare namespace LocalJSX {
         "config"?: ITreeView.Config;
     }
     interface UploaderContainer {
+    }
+    interface UserSelect {
+        "keepOpen"?: boolean;
+        "multiSelect"?: boolean;
+        "onChanged"?: (value: string[]) => void;
+        "value"?: string[];
     }
     interface YoutubeInfo {
     }
@@ -420,6 +468,7 @@ declare namespace LocalJSX {
         "home-page": HomePage;
         "layout-cmp": LayoutCmp;
         "login-page": LoginPage;
+        "messenger-cmp": MessengerCmp;
         "notify-container": NotifyContainer;
         "panel-manager": PanelManager;
         "sermon-info": SermonInfo;
@@ -428,6 +477,7 @@ declare namespace LocalJSX {
         "social-info": SocialInfo;
         "tree-view": TreeView;
         "uploader-container": UploaderContainer;
+        "user-select": UserSelect;
         "youtube-info": YoutubeInfo;
     }
 }
@@ -452,6 +502,7 @@ declare module "@stencil/core" {
             "home-page": LocalJSX.HomePage & JSXBase.HTMLAttributes<HTMLHomePageElement>;
             "layout-cmp": LocalJSX.LayoutCmp & JSXBase.HTMLAttributes<HTMLLayoutCmpElement>;
             "login-page": LocalJSX.LoginPage & JSXBase.HTMLAttributes<HTMLLoginPageElement>;
+            "messenger-cmp": LocalJSX.MessengerCmp & JSXBase.HTMLAttributes<HTMLMessengerCmpElement>;
             "notify-container": LocalJSX.NotifyContainer & JSXBase.HTMLAttributes<HTMLNotifyContainerElement>;
             "panel-manager": LocalJSX.PanelManager & JSXBase.HTMLAttributes<HTMLPanelManagerElement>;
             "sermon-info": LocalJSX.SermonInfo & JSXBase.HTMLAttributes<HTMLSermonInfoElement>;
@@ -460,6 +511,7 @@ declare module "@stencil/core" {
             "social-info": LocalJSX.SocialInfo & JSXBase.HTMLAttributes<HTMLSocialInfoElement>;
             "tree-view": LocalJSX.TreeView & JSXBase.HTMLAttributes<HTMLTreeViewElement>;
             "uploader-container": LocalJSX.UploaderContainer & JSXBase.HTMLAttributes<HTMLUploaderContainerElement>;
+            "user-select": LocalJSX.UserSelect & JSXBase.HTMLAttributes<HTMLUserSelectElement>;
             "youtube-info": LocalJSX.YoutubeInfo & JSXBase.HTMLAttributes<HTMLYoutubeInfoElement>;
         }
     }

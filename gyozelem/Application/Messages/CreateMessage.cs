@@ -14,16 +14,16 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Application.Messages
 {
 
-public class Create
+public class CreateMessage
 {
     public class Command : IRequest<Message>
         {
-            public Guid TargetId { get; set; }
-            public string Title { get; set; }
+            public Guid MessageThreadId { get; set; }
             public string Content { get; set; }
         }
 
@@ -31,7 +31,6 @@ public class Create
         {
             public CommandValidator()
             {
-                RuleFor(x => x.Title).NotEmpty();
                 RuleFor(x => x.Content).NotEmpty();
             }
         }
@@ -53,27 +52,29 @@ public class Create
                 var user = await _context.Users.SingleOrDefaultAsync(x => 
                     x.UserName == _userAccessor.GetCurrentUsername());
 
-                if (user == null || (user.Rank != AppUserRank.Editor && user.Rank != AppUserRank.Admin))
+                if (user == null)
                 {
                     throw new RestException(HttpStatusCode.Unauthorized);
                 }
-                
-                var message = new Message
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Title = request.Title,
+
+                var thread = await _context.MessageThreads.FindAsync(request.MessageThreadId);
+                var msg = new Message() {
+                    Id = Guid.NewGuid(),
                     Content = request.Content,
-                    TargetId = request.TargetId,
-                    SenderId = Guid.Parse(user.Id),
+                    MessageThreadId = thread.Id,
+                    CreatedAt = DateTime.Now,
+                    CreatedBy = Guid.Parse(user.Id),
+                    UpdatedAt = null,
+                    UpdatedBy = null
                 };
 
-                _context.Messages.Add(message);
+                _context.Messages.Add(msg);
 
                 if (await _context.SaveChangesAsync() == 0) {
                     throw new RestException(HttpStatusCode.InternalServerError, new { Message = "Problem saving changes" });
                 }
 
-                return message;
+                return msg;
             }
         }
     }

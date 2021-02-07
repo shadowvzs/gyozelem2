@@ -65,6 +65,7 @@ export class SignUpUserData extends BaseEntity<SignUpUserData> implements ISignU
 }
 
 export class LoggedUserData {
+    public id?: string;
     public username: string;
     public displayName: string;
     public token: string;

@@ -1,0 +1,73 @@
+.auto-complete-root {
+    position: relative;
+    max-width: 100%;
+    background-color: inherit;
+}
+
+.auto-complete-root .value-area {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 6px;
+}
+
+.auto-complete-root .value-area input {
+    margin-top: 4px;
+    width: 100%;
+}
+
+.auto-complete-root .value-area .expand-icon {
+    position: absolute;
+    bottom: 11px;
+    right: 9px;
+    color: rgba(0,0,0,0.56);
+}
+
+.auto-complete-root .value-area .value-item {
+    padding: 2px 2px;
+}
+
+.auto-complete-root .list-area {
+    position: relative;
+    width: 100%;
+}
+
+.auto-complete-root .suggestion {
+    position: absolute;
+    margin: 0 6px;
+    width: calc(100% - 12px);
+    box-shadow: 0 5px 10px 5px rgba(0,0,0,0.25);
+    transform: translateY(3px);
+    border-radius: 0 0 4px 4px;
+    overflow-y: auto;
+    background-color: white;
+}
+
+.auto-complete-root .suggestion .list-item {
+    padding: 6px 12px;
+    transition: 0.3 ease;
+    /* background-color: white; */
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.auto-complete-root .suggestion .list-item > svg {
+    width: 1.5em;
+    height: 1.5em;
+    color: rgba(0,0,0,0.56);
+    margin-right: 6px;
+    visibility: hidden;
+}
+
+.auto-complete-root .suggestion .list-item:hover > svg, 
+.auto-complete-root .suggestion .list-item > svg.checked {
+    visibility: visible;
+}
+
+.auto-complete-root .suggestion .list-item:hover {
+    background-color: rgba(0, 0, 255, 0.05);
+    cursor: pointer;
+}
+
+.auto-complete-root .suggestion .list-item.checked {
+    background-color: rgba(0,0,0,0.15);
+}
